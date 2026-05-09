@@ -1,8 +1,9 @@
 package com.vlad.managerapp.controller;
 
+import com.vlad.managerapp.client.BadRequestException;
+import com.vlad.managerapp.client.ProductsRestClient;
 import com.vlad.managerapp.controller.payload.UpdateProductPayload;
 import com.vlad.managerapp.entity.Product;
-import com.vlad.managerapp.service.ProductService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -15,17 +16,17 @@ import java.util.Locale;
 import java.util.NoSuchElementException;
 
 @Controller
-@RequestMapping("catalogue/products/{productId:\\d+}")
+@RequestMapping(("catalogue/products/{productId:\\d+}"))
 @RequiredArgsConstructor
 public class ProductController {
 
-    private final ProductService productService;
+    private final ProductsRestClient productsRestClient;
 
     private final MessageSource messageSource;
 
     @ModelAttribute("product")
     public Product product(@PathVariable("productId") int productId) {
-        return this.productService.findProduct(productId)
+        return this.productsRestClient.findProduct(productId)
                 .orElseThrow(() -> new NoSuchElementException("catalogue.errors.product.not_found"));
     }
 
@@ -40,14 +41,22 @@ public class ProductController {
     }
 
     @PostMapping("edit")
-    public String updateProduct(@ModelAttribute("product") Product product, UpdateProductPayload payload) {
-        this.productService.updateProduct(product.getId(), payload.title(), payload.details());
-        return "redirect:/catalogue/products/%d".formatted(product.getId());
+    public String updateProduct(@ModelAttribute(name = "product", binding = false) Product product,
+                                UpdateProductPayload payload,
+                                Model model) {
+        try {
+            this.productsRestClient.updateProduct(product.id(), payload.title(), payload.details());
+            return "redirect:/catalogue/products/%d".formatted(product.id());
+        } catch (BadRequestException exception) {
+            model.addAttribute("payload", payload);
+            model.addAttribute("errors", exception.getErrors());
+            return "catalogue/products/edit";
+        }
     }
 
     @PostMapping("delete")
     public String deleteProduct(@ModelAttribute("product") Product product) {
-        this.productService.deleteProduct(product.getId());
+        this.productsRestClient.deleteProduct(product.id());
         return "redirect:/catalogue/products/list";
     }
 
@@ -60,10 +69,7 @@ public class ProductController {
                         exception.getMessage(), locale));
         return "errors/404";
     }
-
 }
-
-
 
 
 

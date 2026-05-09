@@ -2,16 +2,21 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Список товаров &ndash; Влад</title>
+    <title>Список рецептов &ndash; Влад</title>
 </head>
 <body>
-<a data-th-href="@{/catalogue/products/create}">+ Создать товар</a>
-<h1>Список товаров</h1>
+<a data-th-href="@{/catalogue/products/create}">+ Создать рецепт</a>
+<h1>Список рецептов</h1>
+<form method="get" data-th-action="@{/catalogue/products/list}">
+    <label>Фильтр:<input type="text" name="filter" data-th-value="${filter}">
+        <button type="submit">Поиск</button>
+    </label>
+</form>
 <table>
     <thead>
     <tr>
         <th>#</th>
-        <th>Товар</th>
+        <th>Рецепт</th>
     </tr>
     </thead>
     <tbody>
