@@ -16,20 +16,8 @@ public class SecurityBeans {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-                        .requestMatchers(HttpMethod.POST, "/catalogue-api/products")
-                        .hasAuthority("SCOPE_edit_catalogue")
-                        .requestMatchers(HttpMethod.PATCH, "/catalogue-api/products/{productId:\\d}")
-                        .hasAuthority("SCOPE_edit_catalogue")
-                        .requestMatchers(HttpMethod.DELETE, "/catalogue-api/products/{productId:\\d}")
-                        .hasAuthority("SCOPE_edit_catalogue")
-                        .requestMatchers(HttpMethod.GET)
-                        .hasAuthority("SCOPE_view_catalogue")
-                        .anyRequest().denyAll())
+                        .anyRequest().permitAll())
                 .csrf(CsrfConfigurer::disable)
-                .sessionManagement(sessionManagement -> sessionManagement
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer
-                        .jwt(Customizer.withDefaults()))
                 .build();
     }
 }
