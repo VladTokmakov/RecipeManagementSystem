@@ -16,22 +16,22 @@ public class DefaultFavouriteProductsService implements FavouriteProductsService
     private final FavouriteProductRepository favouriteProductRepository;
 
     @Override
-    public FavouriteProduct addProductToFavourites(int productId) {
-        return this.favouriteProductRepository.save(new FavouriteProduct(UUID.randomUUID(), productId));
+    public FavouriteProduct addProductToFavourites(int productId, String userId) {
+        return this.favouriteProductRepository.save(new FavouriteProduct(UUID.randomUUID(), productId, userId));
     }
 
     @Override
-    public void removeProductFromFavourites(int productId) {
-        this.favouriteProductRepository.deleteByProductId(productId);
+    public void removeProductFromFavourites(int productId, String userId) {
+        this.favouriteProductRepository.deleteByProductIdAndUserId(productId, userId);
     }
 
     @Override
-    public Optional<FavouriteProduct> findFavouriteProductByProduct(int productId) {
-        return this.favouriteProductRepository.findByProductId(productId);
+    public Optional<FavouriteProduct> findFavouriteProductByProduct(int productId, String userId) {
+        return this.favouriteProductRepository.findByProductIdAndUserId(productId, userId);
     }
 
     @Override
-    public List<FavouriteProduct> findFavouriteProducts() {
-        return this.favouriteProductRepository.findAll();
+    public List<FavouriteProduct> findFavouriteProducts(String userId) {
+        return this.favouriteProductRepository.findAllByUserId(userId);
     }
 }

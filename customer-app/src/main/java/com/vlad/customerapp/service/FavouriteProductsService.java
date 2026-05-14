@@ -7,11 +7,11 @@ import java.util.Optional;
 
 public interface FavouriteProductsService {
 
-    FavouriteProduct addProductToFavourites(int productId);
+    FavouriteProduct addProductToFavourites(int productId, String userId);
 
-    void removeProductFromFavourites(int productId);
+    void removeProductFromFavourites(int productId, String userId);
 
-    Optional<FavouriteProduct> findFavouriteProductByProduct(int productId);
+    Optional<FavouriteProduct> findFavouriteProductByProduct(int productId, String userId);
 
-    List<FavouriteProduct> findFavouriteProducts();
+    List<FavouriteProduct> findFavouriteProducts(String userId);
 }

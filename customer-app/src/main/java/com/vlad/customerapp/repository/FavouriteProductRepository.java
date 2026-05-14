@@ -1,17 +1,19 @@
 package com.vlad.customerapp.repository;
 
 import com.vlad.customerapp.entity.FavouriteProduct;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
-public interface FavouriteProductRepository {
+public interface FavouriteProductRepository extends JpaRepository<FavouriteProduct, UUID> {
 
-    FavouriteProduct save(FavouriteProduct favouriteProduct);
+    @Transactional
+    void deleteByProductIdAndUserId(int productId, String userId);
 
-    void deleteByProductId(int productId);
+    Optional<FavouriteProduct> findByProductIdAndUserId(int productId, String userId);
 
-    Optional<FavouriteProduct> findByProductId(int productId);
-
-    List<FavouriteProduct> findAll();
+    List<FavouriteProduct> findAllByUserId(String userId);
 }

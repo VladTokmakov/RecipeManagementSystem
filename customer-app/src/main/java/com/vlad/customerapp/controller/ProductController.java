@@ -7,6 +7,8 @@ import com.vlad.customerapp.service.FavouriteProductsService;
 import com.vlad.customerapp.service.ProductReviewsService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -33,24 +35,30 @@ public class ProductController {
     }
 
     @GetMapping
-    public String getProductPage(@PathVariable("productId") int id, Model model) {
+    public String getProductPage(@PathVariable("productId") int id, Model model,
+                                 @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal) {
+        String userId = principal.getAttribute("preferred_username");
         model.addAttribute("inFavourite", false);
         model.addAttribute("reviews", this.productReviewsService.findProductReviewsByProduct(id));
-        if (this.favouriteProductsService.findFavouriteProductByProduct(id).isPresent()) {
+        if (this.favouriteProductsService.findFavouriteProductByProduct(id, userId).isPresent()) {
             model.addAttribute("inFavourite", true);
         }
         return "customer/products/product";
     }
 
     @PostMapping("add-to-favourites")
-    public String addProductToFavourites(@ModelAttribute("product") Product product) {
-        this.favouriteProductsService.addProductToFavourites(product.id());
+    public String addProductToFavourites(@ModelAttribute("product") Product product,
+                                         @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal) {
+        String userId = principal.getAttribute("preferred_username");
+        this.favouriteProductsService.addProductToFavourites(product.id(), userId);
         return "redirect:/customer/products/%d".formatted(product.id());
     }
 
     @PostMapping("remove-from-favourites")
-    public String removeProductFromFavourites(@ModelAttribute("product") Product product) {
-        this.favouriteProductsService.removeProductFromFavourites(product.id());
+    public String removeProductFromFavourites(@ModelAttribute("product") Product product,
+                                              @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal) {
+        String userId = principal.getAttribute("preferred_username");
+        this.favouriteProductsService.removeProductFromFavourites(product.id(), userId);
         return "redirect:/customer/products/%d".formatted(product.id());
     }
 
@@ -58,14 +66,16 @@ public class ProductController {
     public String createReview(@PathVariable("productId") int id,
                                @Valid NewProductReviewPayload payload,
                                BindingResult bindingResult,
-                               Model model) {
+                               Model model,
+                               @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal) {
+        String userId = principal.getAttribute("preferred_username");
         if (bindingResult.hasErrors()) {
             model.addAttribute("inFavourite", false);
             model.addAttribute("payload", payload);
             model.addAttribute("errors", bindingResult.getAllErrors().stream()
                     .map(ObjectError::getDefaultMessage)
                     .toList());
-            if (this.favouriteProductsService.findFavouriteProductByProduct(id).isPresent()) {
+            if (this.favouriteProductsService.findFavouriteProductByProduct(id, userId).isPresent()) {
                 model.addAttribute("inFavourite", true);
             }
             return "customer/products/product";

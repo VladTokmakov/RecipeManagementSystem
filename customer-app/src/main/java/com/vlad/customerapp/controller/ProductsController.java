@@ -5,6 +5,8 @@ import com.vlad.customerapp.entity.FavouriteProduct;
 import com.vlad.customerapp.entity.Product;
 import com.vlad.customerapp.service.FavouriteProductsService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,9 +34,11 @@ public class ProductsController {
 
     @GetMapping("favourites")
     public String getFavouriteProductsPage(Model model,
-                                           @RequestParam(name = "filter", required = false) String filter) {
+                                           @RequestParam(name = "filter", required = false) String filter,
+                                           @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal) {
+        String userId = principal.getAttribute("preferred_username");
         model.addAttribute("filter", filter);
-        List<FavouriteProduct> favouriteProducts = this.favouriteProductsService.findFavouriteProducts();
+        List<FavouriteProduct> favouriteProducts = this.favouriteProductsService.findFavouriteProducts(userId);
         List<Integer> favouriteProductIds = favouriteProducts.stream()
                 .map(FavouriteProduct::getProductId)
                 .toList();
