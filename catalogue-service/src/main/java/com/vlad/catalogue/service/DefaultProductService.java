@@ -26,6 +26,15 @@ public class DefaultProductService implements ProductService {
     }
 
     @Override
+    public Iterable<Product> findAllProductsByDetails(String filter) {
+        if (filter != null && !filter.isBlank()) {
+            return this.productRepository.findAllByDetailsLikeIgnoreCase("%" + filter + "%");
+        } else {
+            return this.productRepository.findAll();
+        }
+    }
+
+    @Override
     @Transactional
     public Product createProduct(String title, String details) {
         return this.productRepository.save(new Product(null, title, details));

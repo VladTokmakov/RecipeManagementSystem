@@ -8,6 +8,8 @@ public interface ProductService {
 
     Iterable<Product> findAllProducts(String filter);
 
+    Iterable<Product> findAllProductsByDetails(String filter);
+
     Product createProduct(String title, String details);
 
     Optional<Product> findProduct(int productId);

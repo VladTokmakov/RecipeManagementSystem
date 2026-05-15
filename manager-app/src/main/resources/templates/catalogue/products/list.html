@@ -8,7 +8,8 @@
 <a data-th-href="@{/catalogue/products/create}">+ Создать рецепт</a>
 <h1>Список рецептов</h1>
 <form method="get" data-th-action="@{/catalogue/products/list}">
-    <label>Фильтр:<input type="text" name="filter" data-th-value="${filter}">
+    <label>Фильтр по названию:<input type="text" name="filter" data-th-value="${filter}"></label><br>
+    <label>Фильтр по описанию:<input type="text" name="detailsFilter" data-th-value="${detailsFilter}">
         <button type="submit">Поиск</button>
     </label>
 </form>

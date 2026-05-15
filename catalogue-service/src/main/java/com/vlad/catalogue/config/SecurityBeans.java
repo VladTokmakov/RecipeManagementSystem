@@ -18,9 +18,9 @@ public class SecurityBeans {
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
                         .requestMatchers(HttpMethod.POST, "/catalogue-api/products")
                         .hasAuthority("SCOPE_edit_catalogue")
-                        .requestMatchers(HttpMethod.PATCH, "/catalogue-api/products/{productId:\\d}")
+                        .requestMatchers(HttpMethod.PATCH, "/catalogue-api/products/{productId:\\d+}")
                         .hasAuthority("SCOPE_edit_catalogue")
-                        .requestMatchers(HttpMethod.DELETE, "/catalogue-api/products/{productId:\\d}")
+                        .requestMatchers(HttpMethod.DELETE, "/catalogue-api/products/{productId:\\d+}")
                         .hasAuthority("SCOPE_edit_catalogue")
                         .requestMatchers(HttpMethod.GET).permitAll()
                         .anyRequest().denyAll())

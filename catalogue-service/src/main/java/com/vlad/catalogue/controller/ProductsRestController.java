@@ -22,8 +22,26 @@ public class ProductsRestController {
 
 
     @GetMapping
-    public Iterable<Product> findProducts(@RequestParam(name = "filter", required = false) String filter) {
-        return this.productService.findAllProducts(filter);
+    public Iterable<Product> findProducts(@RequestParam(name = "filter", required = false) String filter,
+                                         @RequestParam(name = "detailsFilter", required = false) String detailsFilter) {
+        boolean hasFilter = filter != null && !filter.isBlank();
+        boolean hasDetailsFilter = detailsFilter != null && !detailsFilter.isBlank();
+
+        if (hasFilter && hasDetailsFilter) {
+            var byTitle = this.productService.findAllProducts(filter);
+            var byDetails = this.productService.findAllProductsByDetails(detailsFilter);
+            var byTitleList = java.util.stream.StreamSupport.stream(byTitle.spliterator(), false).toList();
+            var byDetailsList = java.util.stream.StreamSupport.stream(byDetails.spliterator(), false).toList();
+            return byTitleList.stream()
+                    .filter(product -> byDetailsList.stream().anyMatch(p -> p.getId().equals(product.getId())))
+                    .toList();
+        } else if (hasDetailsFilter) {
+            return this.productService.findAllProductsByDetails(detailsFilter);
+        } else if (hasFilter) {
+            return this.productService.findAllProducts(filter);
+        } else {
+            return this.productService.findAllProducts(null);
+        }
     }
 
     @PostMapping

@@ -26,23 +26,27 @@ public class ProductsController {
 
     @GetMapping("list")
     public String getProductsListPage(Model model,
-                                      @RequestParam(name = "filter", required = false) String filter) {
+                                      @RequestParam(name = "filter", required = false) String filter,
+                                      @RequestParam(name = "detailsFilter", required = false) String detailsFilter) {
         model.addAttribute("filter", filter);
-        model.addAttribute("products", this.productsClient.findAllProducts(filter));
+        model.addAttribute("detailsFilter", detailsFilter);
+        model.addAttribute("products", this.productsClient.findAllProducts(filter, detailsFilter));
         return "customer/products/list";
     }
 
     @GetMapping("favourites")
     public String getFavouriteProductsPage(Model model,
                                            @RequestParam(name = "filter", required = false) String filter,
+                                           @RequestParam(name = "detailsFilter", required = false) String detailsFilter,
                                            @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal) {
         String userId = principal.getAttribute("preferred_username");
         model.addAttribute("filter", filter);
+        model.addAttribute("detailsFilter", detailsFilter);
         List<FavouriteProduct> favouriteProducts = this.favouriteProductsService.findFavouriteProducts(userId);
         List<Integer> favouriteProductIds = favouriteProducts.stream()
                 .map(FavouriteProduct::getProductId)
                 .toList();
-        List<Product> products = this.productsClient.findAllProducts(filter).stream()
+        List<Product> products = this.productsClient.findAllProducts(filter, detailsFilter).stream()
                 .filter(product -> favouriteProductIds.contains(product.id()))
                 .toList();
         model.addAttribute("products", products);

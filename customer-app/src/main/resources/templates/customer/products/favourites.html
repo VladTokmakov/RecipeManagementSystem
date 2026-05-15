@@ -7,8 +7,9 @@
 <body>
 <a data-th-href="@{/customer/products/list}">Все рецепты</a>
 <h1>Избранные рецепты</h1>
-<form>
-    <label>Фильтр: <input type="text" name="filter" data-th-value="${filter}"> <button type="submit">Поиск</button></label>
+<form method="get" data-th-action="@{/customer/products/favourites}">
+    <label>Фильтр по названию: <input type="text" name="filter" data-th-value="${filter}"></label><br>
+    <label>Фильтр по описанию: <input type="text" name="detailsFilter" data-th-value="${detailsFilter}"> <button type="submit">Поиск</button></label>
 </form>
 <ul>
     <li data-th-each="product : ${products}">

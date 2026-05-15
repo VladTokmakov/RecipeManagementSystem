@@ -8,4 +8,6 @@ import java.util.Optional;
 public interface ProductRepository extends CrudRepository<Product, Integer> {
 
     Iterable<Product> findAllByTitleLikeIgnoreCase(String filter);
+
+    Iterable<Product> findAllByDetailsLikeIgnoreCase(String filter);
 }

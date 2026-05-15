@@ -25,15 +25,10 @@ public class ProductRestController {
 
     private final MessageSource messageSource;
 
-    @ModelAttribute("product")
-    public Product getProduct(@PathVariable("productId") int productId) {
+    @GetMapping
+    public Product findProduct(@PathVariable("productId") int productId) {
         return this.productService.findProduct(productId)
                 .orElseThrow(() -> new NoSuchElementException("catalogue.errors.product.not_found"));
-    }
-
-    @GetMapping
-    public Product findProduct(@ModelAttribute("product") Product product) {
-        return product;
     }
 
     @PatchMapping
