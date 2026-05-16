@@ -1,34 +1,47 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Список рецептов &ndash; Влад</title>
+    <title>Список рецептов &ndash; Рецептотека</title>
+    <link rel="stylesheet" data-th-href="@{/styles.css}">
 </head>
 <body>
-<a data-th-href="@{/catalogue/products/create}">+ Создать рецепт</a>
-<h1>Список рецептов</h1>
-<form method="get" data-th-action="@{/catalogue/products/list}">
-    <label>Фильтр по названию:<input type="text" name="filter" data-th-value="${filter}"></label><br>
-    <label>Фильтр по описанию:<input type="text" name="detailsFilter" data-th-value="${detailsFilter}">
-        <button type="submit">Поиск</button>
-    </label>
-</form>
-<table>
-    <thead>
-    <tr>
-        <th>#</th>
-        <th>Рецепт</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr data-th-each="product : ${products}">
-        <td data-th-text="${product.id}"></td>
-        <td>
-            <a data-th-href="@{/catalogue/products/{productId} (productId=${product.id})}"
-               data-th-text="${product.title}"></a>
-        </td>
-    </tr>
-    </tbody>
-</table>
+<nav class="navbar">
+    <div class="nav-links">
+        <a data-th-href="@{/catalogue/products/list}" class="active">Список рецептов</a>
+        <a data-th-href="@{/catalogue/products/create}">+ Создать рецепт</a>
+    </div>
+</nav>
+
+<div class="header-section">
+    <div class="logo-section">
+        <div class="logo-icon">🌳</div>
+        <div class="logo-text">Рецептотека</div>
+    </div>
+</div>
+
+<div class="search-section">
+    <form method="get" data-th-action="@{/catalogue/products/list}" class="search-form">
+        <input type="text" name="filter" data-th-value="${filter}" placeholder="Фильтр по названию" class="search-input">
+        <input type="text" name="detailsFilter" data-th-value="${detailsFilter}" placeholder="Фильтр по описанию" class="filter-input">
+        <button type="submit" class="search-button">Поиск</button>
+    </form>
+</div>
+
+<div class="main-content">
+    <h1 class="page-title">Список рецептов</h1>
+    <div class="recipe-list">
+        <a data-th-href="@{/catalogue/products/{productId}(productId=${product.id})}" 
+           class="recipe-card" 
+           data-th-each="product : ${products}"
+           style="text-decoration: none; color: inherit;">
+            <div class="recipe-card-header">
+                <div class="recipe-icon">🍲</div>
+                <div class="recipe-title" data-th-text="${product.title}"></div>
+            </div>
+            <div class="recipe-details" data-th-text="${product.details}"></div>
+        </a>
+    </div>
+</div>
 </body>
 </html>

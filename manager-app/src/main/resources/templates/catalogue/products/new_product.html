@@ -1,28 +1,42 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Новый рецепт &ndash; Влад</title>
+    <title>Новый рецепт &ndash; Рецептотека</title>
+    <link rel="stylesheet" data-th-href="@{/styles.css}">
 </head>
 <body>
-<a data-th-href="@{/catalogue/products/list}">&larr; К списку рецептов</a>
-<h1>Новый рецепт</h1>
-<div data-th-if="${errors}">
-    <h2>Допущены ошибки</h2>
-    <ul>
-        <li data-th-each="error: ${errors}" data-th-text="${error}"></li>
-    </ul>
+<nav class="navbar">
+    <div class="nav-links">
+        <a data-th-href="@{/catalogue/products/list}">Список рецептов</a>
+        <a data-th-href="@{/catalogue/products/create}" class="active">+ Создать рецепт</a>
+    </div>
+</nav>
+
+<div class="main-content recipe-detail-container">
+    <a data-th-href="@{/catalogue/products/list}" class="back-link">&larr; К списку рецептов</a>
+    
+    <div class="recipe-detail-header">
+        <h1 class="recipe-detail-title">Новый рецепт</h1>
+        
+        <div data-th-if="${errors}" class="error-section">
+            <ul class="error-list">
+                <li data-th-each="error: ${errors}" data-th-text="${error}"></li>
+            </ul>
+        </div>
+        
+        <form method="post" data-th-action="@{/catalogue/products/create}">
+            <div class="form-group">
+                <label class="form-label">Название:</label>
+                <input type="text" name="title" data-th-value="${payload?.title}" class="form-control" placeholder="Введите название рецепта">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Описание:</label>
+                <textarea name="details" data-th-text="${payload?.details}" class="review-textarea" placeholder="Введите описание рецепта"></textarea>
+            </div>
+            <button type="submit" class="btn-primary">Создать</button>
+        </form>
+    </div>
 </div>
-<form method="post" data-th-action="@{/catalogue/products/create}">
-    <label>
-        Название:<br>
-        <input type="text" name="title" data-th-value="${payload?.title}">
-    </label><br>
-    <label>
-        Описание:<br>
-        <textarea name="details" data-th-text="${payload?.details}"></textarea>
-    </label><br>
-    <button type="submit">Создать</button>
-</form>
 </body>
 </html>

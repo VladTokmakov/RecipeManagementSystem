@@ -1,24 +1,47 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Рецепты &ndash;</title>
+    <title>Рецепты &ndash; Рецептотека</title>
+    <link rel="stylesheet" data-th-href="@{/styles.css}">
 </head>
 <body>
-<a data-th-href="@{/customer/products/favourites}">Избранные рецепты</a>
-<h1>Рецепты</h1>
-<form method="get" data-th-action="@{/customer/products/list}">
-    <label>Фильтр по названию: <input type="text" name="filter" data-th-value="${filter}"></label><br>
-    <label>Фильтр по описанию: <input type="text" name="detailsFilter" data-th-value="${detailsFilter}"> <button type="submit">Поиск</button></label>
-</form>
-<ul>
-    <li data-th-each="product : ${products}">
-        <strong>
-            <a data-th-text="${product.title}"
-               data-th-href="@{/customer/products/{productId}(productId=${product.id})}"></a>
-        </strong>
-        <p data-th-text="${product.details}"></p>
-    </li>
-</ul>
+<nav class="navbar">
+    <div class="nav-links">
+        <a data-th-href="@{/customer/products/list}" class="active">Рецепты</a>
+        <a data-th-href="@{/customer/products/favourites}">Избранное</a>
+    </div>
+</nav>
+
+<div class="header-section">
+    <div class="logo-section">
+        <div class="logo-icon">🌳</div>
+        <div class="logo-text">Рецептотека</div>
+    </div>
+</div>
+
+<div class="search-section">
+    <form method="get" data-th-action="@{/customer/products/list}" class="search-form">
+        <input type="text" name="filter" data-th-value="${filter}" placeholder="Поиск рецептов" class="search-input">
+        <input type="text" name="detailsFilter" data-th-value="${detailsFilter}" placeholder="Фильтр" class="filter-input">
+        <button type="submit" class="search-button">Поиск</button>
+    </form>
+</div>
+
+<div class="main-content">
+    <h1 class="page-title">Рецепты</h1>
+    <div class="recipe-list">
+        <a data-th-href="@{/customer/products/{productId}(productId=${product.id})}" 
+           class="recipe-card" 
+           data-th-each="product : ${products}"
+           style="text-decoration: none; color: inherit;">
+            <div class="recipe-card-header">
+                <div class="recipe-icon">🍲</div>
+                <div class="recipe-title" data-th-text="${product.title}"></div>
+            </div>
+            <div class="recipe-details" data-th-text="${product.details}"></div>
+        </a>
+    </div>
+</div>
 </body>
 </html>

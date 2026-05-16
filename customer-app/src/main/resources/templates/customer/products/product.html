@@ -1,44 +1,63 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>[[${product.title}]] &ndash;</title>
+    <title data-th-text="${product.title} + ' &ndash; Рецептотека'">Рецепт &ndash; Рецептотека</title>
+    <link rel="stylesheet" data-th-href="@{/styles.css}">
 </head>
 <body>
-<a data-th-href="@{/customer/products/list}">&larr; К списку рецептов</a>
-<h1 data-th-text="${product.title}"></h1>
-<p data-th-text="${product.details}"></p>
-<form method="post" data-th-action="@{/customer/products/{productId}/add-to-favourites(productId=${product.id})}"
-      data-th-if="${!inFavourite}">
-    <button type="submit">Добавить в избранное</button>
-</form>
-<form method="post" data-th-action="@{/customer/products/{productId}/remove-from-favourites(productId=${product.id})}"
-      data-th-if="${inFavourite}">
-    <button type="submit">Удалить из избранного</button>
-</form>
-<h2>Отзывы</h2>
-<div data-th-if="${errors}">
-    <h3></h3>
-    <ul>
-        <li data-th-each="error : ${errors}" data-th-text="${error}"></li>
-    </ul>
-</div>
-<form method="post" data-th-action="@{/customer/products/{productId}/create-review(productId=${product.id})}">
-    <label><input type="radio" name="rating" value="1"> 1</label>
-    <label><input type="radio" name="rating" value="2"> 2</label>
-    <label><input type="radio" name="rating" value="3"> 3</label>
-    <label><input type="radio" name="rating" value="4"> 4</label>
-    <label><input type="radio" name="rating" value="5"> 5</label>
-    <br>
-    <label>
-        Отзыв:<br>
-        <textarea name="review"></textarea>
-    </label><br>
-    <button type="submit">Отправить отзыв</button>
-</form>
-<div data-th-each="review : ${reviews}">
-    <h3>[[${review.rating}]]*</h3>
-    <p data-th-text="${review.review}"></p>
+<nav class="navbar">
+    <div class="nav-links">
+        <a data-th-href="@{/customer/products/list}">Рецепты</a>
+        <a data-th-href="@{/customer/products/favourites}">Избранное</a>
+    </div>
+</nav>
+
+<div class="main-content recipe-detail-container">
+    <a data-th-href="@{/customer/products/list}" class="back-link">&larr; К списку рецептов</a>
+    
+    <div class="recipe-detail-header">
+        <h1 class="recipe-detail-title" data-th-text="${product.title}"></h1>
+        <p class="recipe-detail-description" data-th-text="${product.details}"></p>
+        <form method="post" data-th-action="@{/customer/products/{productId}/add-to-favourites(productId=${product.id})}"
+              data-th-if="${!inFavourite}">
+            <button type="submit" class="favourite-button">Добавить в избранное</button>
+        </form>
+        <form method="post" data-th-action="@{/customer/products/{productId}/remove-from-favourites(productId=${product.id})}"
+              data-th-if="${inFavourite}">
+            <button type="submit" class="favourite-button remove">Удалить из избранного</button>
+        </form>
+    </div>
+
+    <div class="reviews-section">
+        <h2 class="section-title">Отзывы</h2>
+        
+        <div data-th-if="${errors}" class="error-section">
+            <ul class="error-list">
+                <li data-th-each="error : ${errors}" data-th-text="${error}"></li>
+            </ul>
+        </div>
+        
+        <form method="post" data-th-action="@{/customer/products/{productId}/create-review(productId=${product.id})}" class="review-form">
+            <div class="rating-options">
+                <label><input type="radio" name="rating" value="1"> 1</label>
+                <label><input type="radio" name="rating" value="2"> 2</label>
+                <label><input type="radio" name="rating" value="3"> 3</label>
+                <label><input type="radio" name="rating" value="4"> 4</label>
+                <label><input type="radio" name="rating" value="5"> 5</label>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Отзыв:</label>
+                <textarea name="review" class="review-textarea" placeholder="Напишите ваш отзыв..."></textarea>
+            </div>
+            <button type="submit" class="btn-primary">Отправить отзыв</button>
+        </form>
+        
+        <div data-th-each="review : ${reviews}" class="review-item">
+            <div class="review-rating">[[${review.rating}]]*</div>
+            <div class="review-text" data-th-text="${review.review}"></div>
+        </div>
+    </div>
 </div>
 </body>
 </html>
