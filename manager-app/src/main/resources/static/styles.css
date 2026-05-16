@@ -512,3 +512,230 @@ body {
 .error-list li {
     margin-bottom: 5px;
 }
+
+/* Responsive Design */
+
+/* Tablet devices (max-width: 1024px) */
+@media (max-width: 1024px) {
+    .recipe-list {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+    
+    .search-input {
+        width: 200px;
+    }
+    
+    .filter-input {
+        width: 150px;
+    }
+}
+
+/* Mobile devices (max-width: 768px) */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 10px 15px;
+    }
+    
+    .nav-links {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .header-section {
+        padding: 15px;
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .search-section {
+        padding: 15px;
+    }
+    
+    .search-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .search-input,
+    .filter-input {
+        width: 100%;
+    }
+    
+    .search-button {
+        width: 100%;
+    }
+    
+    .main-content {
+        padding: 15px;
+    }
+    
+    .page-title {
+        font-size: 24px;
+    }
+    
+    .recipe-list {
+        grid-template-columns: 1fr;
+    }
+    
+    .recipe-card {
+        padding: 15px;
+    }
+    
+    .recipe-detail-container {
+        padding: 0 15px;
+    }
+    
+    .recipe-detail-title {
+        font-size: 24px;
+    }
+    
+    .recipe-detail-description {
+        font-size: 14px;
+        max-height: 300px;
+    }
+    
+    .section-title {
+        font-size: 20px;
+    }
+    
+    .step {
+        padding: 15px;
+    }
+    
+    .reviews-section {
+        padding: 15px;
+    }
+    
+    .rating-options {
+        flex-wrap: wrap;
+    }
+    
+    .manager-table {
+        font-size: 14px;
+    }
+    
+    .manager-table th,
+    .manager-table td {
+        padding: 10px;
+    }
+}
+
+/* Small mobile devices (max-width: 480px) */
+@media (max-width: 480px) {
+    .logo-text {
+        font-size: 20px;
+    }
+    
+    .recipe-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+    }
+    
+    .recipe-title {
+        font-size: 16px;
+    }
+    
+    .recipe-details {
+        font-size: 13px;
+    }
+    
+    .recipe-detail-header {
+        padding: 15px;
+    }
+    
+    .recipe-detail-title {
+        font-size: 20px;
+    }
+    
+    .favourite-button {
+        width: 100%;
+        padding: 10px 20px;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .action-button {
+        width: 100%;
+    }
+    
+    .btn-primary {
+        width: 100%;
+    }
+}
+
+ / *   P a g i n a t i o n   * / 
+ . p a g i n a t i o n   { 
+         d i s p l a y :   f l e x ; 
+         j u s t i f y - c o n t e n t :   s p a c e - b e t w e e n ; 
+         a l i g n - i t e m s :   c e n t e r ; 
+         m a r g i n - t o p :   3 0 p x ; 
+         p a d d i n g :   2 0 p x ; 
+         b a c k g r o u n d - c o l o r :   w h i t e ; 
+         b o r d e r - r a d i u s :   1 5 p x ; 
+         b o x - s h a d o w :   0   2 p x   8 p x   r g b a ( 0 , 0 , 0 , 0 . 1 ) ; 
+         f l e x - w r a p :   w r a p ; 
+         g a p :   1 5 p x ; 
+ } 
+ 
+ . p a g i n a t i o n - i n f o   { 
+         c o l o r :   # 5 D 4 0 3 7 ; 
+         f o n t - s i z e :   1 4 p x ; 
+ } 
+ 
+ . p a g i n a t i o n - c o n t r o l s   { 
+         d i s p l a y :   f l e x ; 
+         a l i g n - i t e m s :   c e n t e r ; 
+         g a p :   1 0 p x ; 
+         f l e x - w r a p :   w r a p ; 
+ } 
+ 
+ . p a g i n a t i o n - p a g e s   { 
+         d i s p l a y :   f l e x ; 
+         g a p :   5 p x ; 
+ } 
+ 
+ . p a g i n a t i o n - l i n k   { 
+         p a d d i n g :   8 p x   1 6 p x ; 
+         b a c k g r o u n d - c o l o r :   # F F E 4 C 4 ; 
+         c o l o r :   # 5 D 4 0 3 7 ; 
+         b o r d e r - r a d i u s :   2 0 p x ; 
+         t r a n s i t i o n :   b a c k g r o u n d - c o l o r   0 . 3 s ; 
+         f o n t - w e i g h t :   5 0 0 ; 
+ } 
+ 
+ . p a g i n a t i o n - l i n k : h o v e r   { 
+         b a c k g r o u n d - c o l o r :   # F F B 7 4 D ; 
+         c o l o r :   w h i t e ; 
+ } 
+ 
+ . p a g i n a t i o n - l i n k . a c t i v e   { 
+         b a c k g r o u n d - c o l o r :   # F F B 7 4 D ; 
+         c o l o r :   w h i t e ; 
+         c u r s o r :   d e f a u l t ; 
+ } 
+ 
+ . p a g i n a t i o n - l i n k . a c t i v e : h o v e r   { 
+         b a c k g r o u n d - c o l o r :   # F F B 7 4 D ; 
+ } 
+ 
+ / *   R e s p o n s i v e   p a g i n a t i o n   * / 
+ @ m e d i a   ( m a x - w i d t h :   7 6 8 p x )   { 
+         . p a g i n a t i o n   { 
+                 f l e x - d i r e c t i o n :   c o l u m n ; 
+                 t e x t - a l i g n :   c e n t e r ; 
+         } 
+         
+         . p a g i n a t i o n - c o n t r o l s   { 
+                 w i d t h :   1 0 0 % ; 
+                 j u s t i f y - c o n t e n t :   c e n t e r ; 
+         } 
+         
+         . p a g i n a t i o n - p a g e s   { 
+                 f l e x - w r a p :   w r a p ; 
+                 j u s t i f y - c o n t e n t :   c e n t e r ; 
+         } 
+ }  
+ 

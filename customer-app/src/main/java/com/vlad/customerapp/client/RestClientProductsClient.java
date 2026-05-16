@@ -1,5 +1,6 @@
 package com.vlad.customerapp.client;
 
+import com.vlad.customerapp.controller.payload.PaginatedProductsResponse;
 import com.vlad.customerapp.entity.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
@@ -16,6 +17,10 @@ public class RestClientProductsClient implements ProductsClient {
             new ParameterizedTypeReference<>() {
             };
 
+    private static final ParameterizedTypeReference<PaginatedProductsResponse> PAGINATED_PRODUCTS_TYPE_REFERENCE =
+            new ParameterizedTypeReference<>() {
+            };
+
     private final RestClient restClient;
 
     @Override
@@ -25,6 +30,16 @@ public class RestClientProductsClient implements ProductsClient {
                 .uri("/catalogue-api/products?filter={filter}&detailsFilter={detailsFilter}", filter, detailsFilter)
                 .retrieve()
                 .body(PRODUCTS_TYPE_REFERENCE);
+    }
+
+    @Override
+    public PaginatedProductsResponse findAllProductsPaginated(String filter, String detailsFilter, int page, int size) {
+        return this.restClient
+                .get()
+                .uri("/catalogue-api/products?filter={filter}&detailsFilter={detailsFilter}&page={page}&size={size}", 
+                     filter, detailsFilter, page, size)
+                .retrieve()
+                .body(PAGINATED_PRODUCTS_TYPE_REFERENCE);
     }
 
     @Override

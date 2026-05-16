@@ -42,6 +42,33 @@
             <div class="recipe-details" data-th-text="${product.details}"></div>
         </a>
     </div>
+    
+    <div class="pagination" data-th-if="${totalPages > 1}">
+        <span class="pagination-info">
+            Страница <span data-th-text="${currentPage + 1}"></span> из <span data-th-text="${totalPages}"></span>
+            (всего <span data-th-text="${totalElements}"></span> рецептов)
+        </span>
+        <div class="pagination-controls">
+            <a data-th-href="@{/customer/products/list(filter=${filter}, detailsFilter=${detailsFilter}, page=${currentPage - 1}, size=${pageSize})}" 
+               class="pagination-link"
+               data-th-if="${currentPage > 0}"
+               style="text-decoration: none;">&larr; Назад</a>
+            
+            <span class="pagination-pages">
+                <a data-th-each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                   data-th-href="@{/customer/products/list(filter=${filter}, detailsFilter=${detailsFilter}, page=${i}, size=${pageSize})}"
+                   data-th-classappend="${i == currentPage} ? 'active' : ''"
+                   class="pagination-link"
+                   style="text-decoration: none;"
+                   data-th-text="${i + 1}"></a>
+            </span>
+            
+            <a data-th-href="@{/customer/products/list(filter=${filter}, detailsFilter=${detailsFilter}, page=${currentPage + 1}, size=${pageSize})}" 
+               class="pagination-link"
+               data-th-if="${currentPage < totalPages - 1}"
+               style="text-decoration: none;">Вперед &rarr;</a>
+        </div>
+    </div>
 </div>
 </body>
 </html>
