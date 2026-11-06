@@ -13,3 +13,4 @@ public record NewProductReviewPayload(
         @Size(max = 1000, message = "{customer.products.reviews.create.errors.review_is_too_big}")
         String review) {
 }
+
