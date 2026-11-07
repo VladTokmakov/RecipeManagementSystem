@@ -1,21 +1,52 @@
 spring:
+  config:
+    import:
+      - optional:file:./.env[.properties]
+      - optional:file:./../.env[.properties]
   datasource:
-    url: jdbc:postgresql://localhost:5432/catalogue
-    username: catalogue
-    password: catalogue
+    url: ${CATALOGUE_DB_URL:jdbc:postgresql://localhost:5432/catalogue}
+    username: ${CATALOGUE_DB_USERNAME:catalogue}
+    password: ${CATALOGUE_DB_PASSWORD:catalogue}
   flyway:
     schemas:
       - public
       - catalogue
   jpa:
-    show-sql: true
+    show-sql: false
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8082/realms/RecipeManagementSystem
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8082/realms/RecipeManagementSystem}
+
+vlad:
+  security:
+    audience: ${CATALOGUE_AUDIENCE:catalogue-service}
+    rate-limit:
+      requests-per-minute: ${RATE_LIMIT_REQUESTS_PER_MINUTE:120}
+      trust-forwarded-headers: ${RATE_LIMIT_TRUST_FORWARDED:false}
+
 server:
   port: 8081
+  max-http-request-header-size: 8KB
+  error:
+    include-message: never
+    include-stacktrace: never
+    include-exception: false
+  tomcat:
+    max-swallow-size: 2MB
+    max-http-form-post-size: 1MB
+
+springdoc:
+  api-docs:
+    enabled: ${SPRINGDOC_ENABLED:true}
+  swagger-ui:
+    enabled: ${SPRINGDOC_ENABLED:true}
+
 logging:
   level:
-    sql: info
+    root: info
+    sql: warn

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -10,6 +10,9 @@
     <div class="nav-links">
         <a data-th-href="@{/customer/products/list}" class="active">Рецепты</a>
         <a data-th-href="@{/customer/products/favourites}">Избранное</a>
+        <form method="post" data-th-action="@{/logout}" style="display: inline;">
+            <button type="submit" class="nav-logout">Выйти</button>
+        </form>
     </div>
 </nav>
 

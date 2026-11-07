@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -10,6 +10,9 @@
     <div class="nav-links">
         <a data-th-href="@{/customer/products/list}">Рецепты</a>
         <a data-th-href="@{/customer/products/favourites}">Избранное</a>
+        <form method="post" data-th-action="@{/logout}" style="display: inline;">
+            <button type="submit" class="nav-logout">Выйти</button>
+        </form>
     </div>
 </nav>
 
@@ -56,6 +59,11 @@
         <div data-th-each="review : ${reviews}" class="review-item">
             <div class="review-rating">[[${review.rating}]]*</div>
             <div class="review-text" data-th-text="${review.review}"></div>
+            <form method="post"
+                  data-th-if="${review.own}"
+                  data-th-action="@{/customer/products/{productId}/delete-review(productId=${product.id})}">
+                <button type="submit" class="btn-secondary">Удалить мой отзыв</button>
+            </form>
         </div>
     </div>
 </div>

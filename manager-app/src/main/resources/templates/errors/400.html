@@ -1,0 +1,29 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title data-th-text="${errorTitle}">Ошибка</title>
+    <link rel="stylesheet" data-th-href="@{/styles.css}">
+</head>
+<body>
+<nav class="navbar">
+    <div class="nav-links">
+        <a data-th-href="@{/catalogue/products/list}">Список рецептов</a>
+        <a data-th-href="@{/catalogue/products/create}">+ Добавить рецепт</a>
+        <form method="post" data-th-action="@{/logout}" style="display: inline;">
+            <button type="submit" class="nav-logout">Выйти</button>
+        </form>
+    </div>
+</nav>
+
+<div class="main-content recipe-detail-container">
+    <a data-th-href="@{/catalogue/products/list}" class="back-link">&larr; К списку рецептов</a>
+    <div class="recipe-detail-header">
+        <h1 class="recipe-detail-title" data-th-text="${errorHeader}">Некорректный запрос</h1>
+    </div>
+    <ul data-th-if="${!errors.isEmpty()}">
+        <li data-th-each="error : ${errors}" data-th-text="${error}"></li>
+    </ul>
+</div>
+</body>
+</html>

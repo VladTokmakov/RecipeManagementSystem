@@ -17,7 +17,9 @@ public class DefaultFavouriteProductsService implements FavouriteProductsService
 
     @Override
     public FavouriteProduct addProductToFavourites(int productId, String userId) {
-        return this.favouriteProductRepository.save(new FavouriteProduct(UUID.randomUUID(), productId, userId));
+        return this.favouriteProductRepository.findByProductIdAndUserId(productId, userId)
+                .orElseGet(() -> this.favouriteProductRepository.save(
+                        new FavouriteProduct(UUID.randomUUID(), productId, userId)));
     }
 
     @Override

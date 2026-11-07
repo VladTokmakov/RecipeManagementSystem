@@ -11,7 +11,6 @@ body {
     min-height: 100vh;
 }
 
-/* Navigation */
 .navbar {
     background-color: #FFE4C4;
     padding: 15px 30px;
@@ -44,7 +43,6 @@ body {
     color: white;
 }
 
-/* Header with logo */
 .header-section {
     display: flex;
     justify-content: space-between;
@@ -75,7 +73,6 @@ body {
     color: #5D4037;
 }
 
-/* Search and filter section */
 .search-section {
     padding: 20px 30px;
     background-color: #FFF8E7;
@@ -133,7 +130,6 @@ body {
     background-color: #FF9800;
 }
 
-/* Main content */
 .main-content {
     padding: 30px;
 }
@@ -145,7 +141,6 @@ body {
     margin-bottom: 25px;
 }
 
-/* Recipe cards */
 .recipe-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -207,7 +202,6 @@ body {
     max-height: 42px;
 }
 
-/* Recipe detail page */
 .recipe-detail-container {
     max-width: 800px;
     margin: 0 auto;
@@ -266,7 +260,6 @@ body {
     background-color: #E53935;
 }
 
-/* Preparation section */
 .preparation-section {
     background-color: white;
     padding: 25px;
@@ -303,7 +296,6 @@ body {
     line-height: 1.6;
 }
 
-/* Reviews section */
 .reviews-section {
     background-color: white;
     padding: 25px;
@@ -364,7 +356,6 @@ body {
     line-height: 1.5;
 }
 
-/* Back button */
 .back-link {
     display: inline-flex;
     align-items: center;
@@ -381,7 +372,6 @@ body {
     background-color: #FFE4C4;
 }
 
-/* Manager app specific */
 .manager-table {
     width: 100%;
     border-collapse: collapse;
@@ -452,7 +442,6 @@ body {
     background-color: #E53935;
 }
 
-/* Form styles */
 .form-group {
     margin-bottom: 20px;
 }
@@ -495,7 +484,6 @@ body {
     background-color: #FF9800;
 }
 
-/* Error messages */
 .error-section {
     background-color: #FFEBEE;
     padding: 15px;
@@ -513,9 +501,6 @@ body {
     margin-bottom: 5px;
 }
 
-/* Responsive Design */
-
-/* Tablet devices (max-width: 1024px) */
 @media (max-width: 1024px) {
     .recipe-list {
         grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -530,7 +515,6 @@ body {
     }
 }
 
-/* Mobile devices (max-width: 768px) */
 @media (max-width: 768px) {
     .navbar {
         padding: 10px 15px;
@@ -620,7 +604,6 @@ body {
     }
 }
 
-/* Small mobile devices (max-width: 480px) */
 @media (max-width: 480px) {
     .logo-text {
         font-size: 20px;
@@ -666,76 +649,89 @@ body {
     }
 }
 
- / *   P a g i n a t i o n   * / 
- . p a g i n a t i o n   { 
-         d i s p l a y :   f l e x ; 
-         j u s t i f y - c o n t e n t :   s p a c e - b e t w e e n ; 
-         a l i g n - i t e m s :   c e n t e r ; 
-         m a r g i n - t o p :   3 0 p x ; 
-         p a d d i n g :   2 0 p x ; 
-         b a c k g r o u n d - c o l o r :   w h i t e ; 
-         b o r d e r - r a d i u s :   1 5 p x ; 
-         b o x - s h a d o w :   0   2 p x   8 p x   r g b a ( 0 , 0 , 0 , 0 . 1 ) ; 
-         f l e x - w r a p :   w r a p ; 
-         g a p :   1 5 p x ; 
- } 
- 
- . p a g i n a t i o n - i n f o   { 
-         c o l o r :   # 5 D 4 0 3 7 ; 
-         f o n t - s i z e :   1 4 p x ; 
- } 
- 
- . p a g i n a t i o n - c o n t r o l s   { 
-         d i s p l a y :   f l e x ; 
-         a l i g n - i t e m s :   c e n t e r ; 
-         g a p :   1 0 p x ; 
-         f l e x - w r a p :   w r a p ; 
- } 
- 
- . p a g i n a t i o n - p a g e s   { 
-         d i s p l a y :   f l e x ; 
-         g a p :   5 p x ; 
- } 
- 
- . p a g i n a t i o n - l i n k   { 
-         p a d d i n g :   8 p x   1 6 p x ; 
-         b a c k g r o u n d - c o l o r :   # F F E 4 C 4 ; 
-         c o l o r :   # 5 D 4 0 3 7 ; 
-         b o r d e r - r a d i u s :   2 0 p x ; 
-         t r a n s i t i o n :   b a c k g r o u n d - c o l o r   0 . 3 s ; 
-         f o n t - w e i g h t :   5 0 0 ; 
- } 
- 
- . p a g i n a t i o n - l i n k : h o v e r   { 
-         b a c k g r o u n d - c o l o r :   # F F B 7 4 D ; 
-         c o l o r :   w h i t e ; 
- } 
- 
- . p a g i n a t i o n - l i n k . a c t i v e   { 
-         b a c k g r o u n d - c o l o r :   # F F B 7 4 D ; 
-         c o l o r :   w h i t e ; 
-         c u r s o r :   d e f a u l t ; 
- } 
- 
- . p a g i n a t i o n - l i n k . a c t i v e : h o v e r   { 
-         b a c k g r o u n d - c o l o r :   # F F B 7 4 D ; 
- } 
- 
- / *   R e s p o n s i v e   p a g i n a t i o n   * / 
- @ m e d i a   ( m a x - w i d t h :   7 6 8 p x )   { 
-         . p a g i n a t i o n   { 
-                 f l e x - d i r e c t i o n :   c o l u m n ; 
-                 t e x t - a l i g n :   c e n t e r ; 
-         } 
-         
-         . p a g i n a t i o n - c o n t r o l s   { 
-                 w i d t h :   1 0 0 % ; 
-                 j u s t i f y - c o n t e n t :   c e n t e r ; 
-         } 
-         
-         . p a g i n a t i o n - p a g e s   { 
-                 f l e x - w r a p :   w r a p ; 
-                 j u s t i f y - c o n t e n t :   c e n t e r ; 
-         } 
- }  
- 
+.pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 30px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.pagination-info {
+    color: #5D4037;
+    font-size: 14px;
+}
+
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.pagination-pages {
+    display: flex;
+    gap: 5px;
+}
+
+.pagination-link {
+    padding: 8px 16px;
+    background-color: #FFE4C4;
+    color: #5D4037;
+    border-radius: 20px;
+    transition: background-color 0.3s;
+    font-weight: 500;
+}
+
+.pagination-link:hover {
+    background-color: #FFB74D;
+    color: white;
+}
+
+.pagination-link.active {
+    background-color: #FFB74D;
+    color: white;
+    cursor: default;
+}
+
+.pagination-link.active:hover {
+    background-color: #FFB74D;
+}
+
+@media (max-width: 768px) {
+    .pagination {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .pagination-controls {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .pagination-pages {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
+
+.nav-logout {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 500;
+    color: #5D4037;
+    padding: 8px 16px;
+    border-radius: 20px;
+    transition: background-color 0.3s;
+}
+
+.nav-logout:hover {
+    background-color: rgba(93, 64, 55, 0.08);
+}

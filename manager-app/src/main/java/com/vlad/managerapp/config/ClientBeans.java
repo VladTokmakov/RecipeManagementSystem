@@ -2,7 +2,8 @@ package com.vlad.managerapp.config;
 
 import com.vlad.managerapp.client.RestClientProductsRestClient;
 import com.vlad.managerapp.security.OAuthClientHttpRequestInterceptor;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
+import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
@@ -10,21 +11,28 @@ import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizedCli
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.web.client.RestClient;
 
+import java.time.Duration;
+
 @Configuration
 public class ClientBeans {
 
     @Bean
     public RestClientProductsRestClient productsRestClient(
-            @Value("${vlad.service.catalogue.uri:http://localhost:8081}") String catalogueBaseUri,
+            CatalogueProperties catalogueProperties,
             ClientRegistrationRepository clientRegistrationRepository,
-            OAuth2AuthorizedClientRepository authorizedClientRepository,
-            @Value("${vlad.services.catalogue.registration-id:keycloak}") String registrationId) {
+            OAuth2AuthorizedClientRepository authorizedClientRepository) {
+
         return new RestClientProductsRestClient(RestClient.builder()
-                .baseUrl(catalogueBaseUri)
+                .requestFactory(ClientHttpRequestFactoryBuilder.jdk()
+                        .build(ClientHttpRequestFactorySettings.defaults()
+                                .withConnectTimeout(Duration.ofSeconds(3))
+                                .withReadTimeout(Duration.ofSeconds(5))))
+                .baseUrl(catalogueProperties.uri())
                 .requestInterceptor(
                         new OAuthClientHttpRequestInterceptor(
                                 new DefaultOAuth2AuthorizedClientManager(clientRegistrationRepository,
-                                        authorizedClientRepository), registrationId))
+                                        authorizedClientRepository),
+                                catalogueProperties.registrationId()))
                 .build());
     }
 }

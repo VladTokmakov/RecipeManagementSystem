@@ -1,0 +1,32 @@
+﻿<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Ошибка &ndash; Рецептотека</title>
+    <link rel="stylesheet" data-th-href="@{/styles.css}">
+</head>
+<body>
+<nav class="navbar">
+    <div class="nav-links">
+        <a data-th-href="@{/catalogue/products/list}">Список рецептов</a>
+        <a data-th-href="@{/catalogue/products/create}">+ Создать рецепт</a>
+        <form method="post" data-th-action="@{/logout}" style="display: inline;">
+            <button type="submit" class="nav-logout">Выйти</button>
+        </form>
+    </div>
+</nav>
+
+<div class="main-content recipe-detail-container">
+    <a data-th-href="@{/catalogue/products/list}" class="back-link">&larr; К списку рецептов</a>
+    <div class="recipe-detail-header">
+        <h1 class="recipe-detail-title">Что-то пошло не так</h1>
+        <p class="recipe-detail-description">
+            Не удалось выполнить запрос. Попробуйте вернуться к списку рецептов и повторить действие.
+        </p>
+        <p class="recipe-detail-description" data-th-if="${status != null}">
+            Код ошибки: <span data-th-text="${status}"></span>
+        </p>
+    </div>
+</div>
+</body>
+</html>

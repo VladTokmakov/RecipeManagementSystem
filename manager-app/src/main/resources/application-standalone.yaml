@@ -1,22 +1,48 @@
 vlad:
     services:
         catalogue:
-            uri: http://localhost:8081
-            registration-id: keycloak
+            uri: ${CATALOGUE_URI:http://localhost:8081}
+            registration-id: ${CATALOGUE_REGISTRATION_ID:keycloak}
 spring:
+    config:
+        import:
+            - optional:file:./.env[.properties]
+            - optional:file:./../.env[.properties]
     security:
         oauth2:
             client:
                 provider:
                     keycloak:
-                        issuer-uri: http://localhost:8082/realms/RecipeManagementSystem
+                        issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8082/realms/RecipeManagementSystem}
                         user-name-attribute: preferred_username
                 registration:
                     keycloak:
-                        client-id: manager-app
-                        client-secret: cMguYKMXt8XBzQ1OHtFXaioTCXywQFxz
+                        client-id: ${KEYCLOAK_MANAGER_CLIENT_ID:manager-app}
+                        client-secret: ${KEYCLOAK_MANAGER_CLIENT_SECRET}
                         scope:
                             - openid
                             - view_catalogue
                             - edit_catalogue
                             - microprofile-jwt
+    jpa:
+        open-in-view: false
+server:
+    port: 8080
+    max-http-request-header-size: 8KB
+    servlet:
+        session:
+            timeout: 30m
+            cookie:
+                http-only: true
+                same-site: lax
+                secure: ${COOKIE_SECURE:false}
+    error:
+        include-message: never
+        include-stacktrace: never
+        include-exception: false
+    tomcat:
+        max-swallow-size: 2MB
+        max-http-form-post-size: 1MB
+logging:
+    level:
+        root: info

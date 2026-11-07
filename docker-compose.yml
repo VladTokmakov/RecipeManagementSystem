@@ -1,0 +1,47 @@
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.8.2
+    container_name: RecipeManagementSystem-keycloak
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN:-admin}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:?Задайте KEYCLOAK_ADMIN_PASSWORD в .env}
+      KC_HEALTH_ENABLED: "true"
+    ports:
+      - "127.0.0.1:8082:8080"
+    volumes:
+      - ./config/keycloak/import:/opt/keycloak/data/import:ro
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/9000 && echo -e 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && cat <&3 | grep -q 'UP'"]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+      start_period: 60s
+
+  catalogue-db:
+    image: postgres:16
+    container_name: catalogue-db
+    environment:
+      POSTGRES_USER: ${CATALOGUE_DB_USERNAME:-catalogue}
+      POSTGRES_PASSWORD: ${CATALOGUE_DB_PASSWORD:?Задайте CATALOGUE_DB_PASSWORD в .env}
+      POSTGRES_DB: ${CATALOGUE_DB_NAME:-catalogue}
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - catalogue-db-data:/var/lib/postgresql/data
+
+  customer-app-db:
+    image: postgres:16
+    container_name: customer-app-db
+    environment:
+      POSTGRES_USER: ${CUSTOMER_DB_USERNAME:-customer_app}
+      POSTGRES_PASSWORD: ${CUSTOMER_DB_PASSWORD:?Задайте CUSTOMER_DB_PASSWORD в .env}
+      POSTGRES_DB: ${CUSTOMER_DB_NAME:-customer_app}
+    ports:
+      - "127.0.0.1:5434:5432"
+    volumes:
+      - customer-app-db-data:/var/lib/postgresql/data
+
+volumes:
+  catalogue-db-data:
+  customer-app-db-data:

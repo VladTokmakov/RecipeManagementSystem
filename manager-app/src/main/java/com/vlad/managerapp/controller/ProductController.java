@@ -5,11 +5,14 @@ import com.vlad.managerapp.client.ProductsRestClient;
 import com.vlad.managerapp.controller.payload.UpdateProductPayload;
 import com.vlad.managerapp.entity.Product;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Locale;
@@ -42,8 +45,17 @@ public class ProductController {
 
     @PostMapping("edit")
     public String updateProduct(@ModelAttribute(name = "product", binding = false) Product product,
-                                UpdateProductPayload payload,
+                                @Valid UpdateProductPayload payload,
+                                BindingResult bindingResult,
                                 Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("payload", payload);
+            model.addAttribute("errors", bindingResult.getAllErrors().stream()
+                    .map(ObjectError::getDefaultMessage)
+                    .toList());
+            return "catalogue/products/edit";
+        }
+
         try {
             this.productsRestClient.updateProduct(product.id(), payload.title(), payload.details());
             return "redirect:/catalogue/products/%d".formatted(product.id());
@@ -55,7 +67,7 @@ public class ProductController {
     }
 
     @PostMapping("delete")
-    public String deleteProduct(@ModelAttribute("product") Product product) {
+    public String deleteProduct(@ModelAttribute(name = "product", binding = false) Product product) {
         this.productsRestClient.deleteProduct(product.id());
         return "redirect:/catalogue/products/list";
     }
@@ -70,22 +82,3 @@ public class ProductController {
         return "errors/404";
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

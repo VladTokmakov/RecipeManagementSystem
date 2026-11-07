@@ -15,6 +15,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Controller
@@ -37,27 +38,36 @@ public class ProductController {
     @GetMapping
     public String getProductPage(@PathVariable("productId") int id, Model model,
                                  @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal) {
-        String userId = principal.getAttribute("preferred_username");
-        model.addAttribute("inFavourite", false);
-        model.addAttribute("reviews", this.productReviewsService.findProductReviewsByProduct(id));
-        if (this.favouriteProductsService.findFavouriteProductByProduct(id, userId).isPresent()) {
-            model.addAttribute("inFavourite", true);
-        }
+        String userId = principal.getAttribute("sub");
+
+        List<ProductReviewView> reviews = this.productReviewsService.findProductReviewsByProduct(id).stream()
+                .map(review -> new ProductReviewView(
+                        review.getRating(),
+                        review.getReview(),
+                        userId.equals(review.getUserId())))
+                .toList();
+
+        model.addAttribute("reviews", reviews);
+        model.addAttribute("inFavourite",
+                this.favouriteProductsService.findFavouriteProductByProduct(id, userId).isPresent());
         return "customer/products/product";
     }
 
+    public record ProductReviewView(int rating, String review, boolean own) {
+    }
+
     @PostMapping("add-to-favourites")
-    public String addProductToFavourites(@ModelAttribute("product") Product product,
+    public String addProductToFavourites(@ModelAttribute(name = "product", binding = false) Product product,
                                          @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal) {
-        String userId = principal.getAttribute("preferred_username");
+        String userId = principal.getAttribute("sub");
         this.favouriteProductsService.addProductToFavourites(product.id(), userId);
         return "redirect:/customer/products/%d".formatted(product.id());
     }
 
     @PostMapping("remove-from-favourites")
-    public String removeProductFromFavourites(@ModelAttribute("product") Product product,
+    public String removeProductFromFavourites(@ModelAttribute(name = "product", binding = false) Product product,
                                               @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal) {
-        String userId = principal.getAttribute("preferred_username");
+        String userId = principal.getAttribute("sub");
         this.favouriteProductsService.removeProductFromFavourites(product.id(), userId);
         return "redirect:/customer/products/%d".formatted(product.id());
     }
@@ -68,7 +78,7 @@ public class ProductController {
                                BindingResult bindingResult,
                                Model model,
                                @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal) {
-        String userId = principal.getAttribute("preferred_username");
+        String userId = principal.getAttribute("sub");
         if (bindingResult.hasErrors()) {
             model.addAttribute("inFavourite", false);
             model.addAttribute("payload", payload);
@@ -80,13 +90,23 @@ public class ProductController {
             }
             return "customer/products/product";
         } else {
-            this.productReviewsService.createProductReview(id, payload.rating(), payload.review());
+            this.productReviewsService.createProductReview(id, userId, payload.rating(), payload.review());
             return "redirect:/customer/products/%d".formatted(id);
         }
     }
 
+    @PostMapping("delete-review")
+    public String deleteReview(@PathVariable("productId") int id,
+                               @AuthenticationPrincipal OAuth2AuthenticatedPrincipal principal) {
+        String userId = principal.getAttribute("sub");
+        this.productReviewsService.deleteProductReview(id, userId);
+        return "redirect:/customer/products/%d".formatted(id);
+    }
+
     @ExceptionHandler(NoSuchElementException.class)
-    public String handleNoSuchElementException(NoSuchElementException exception, Model model) {
+    public String handleNoSuchElementException(NoSuchElementException exception, Model model,
+                                               jakarta.servlet.http.HttpServletResponse response) {
+        response.setStatus(404);
         model.addAttribute("error", exception.getMessage());
         return "errors/404";
     }

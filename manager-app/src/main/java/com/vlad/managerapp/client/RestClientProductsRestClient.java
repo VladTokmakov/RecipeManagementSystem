@@ -41,7 +41,7 @@ public class RestClientProductsRestClient implements ProductsRestClient {
     public PaginatedProductsResponse findAllProductsPaginated(String filter, String detailsFilter, int page, int size) {
         return this.restClient
                 .get()
-                .uri("/catalogue-api/products?filter={filter}&detailsFilter={detailsFilter}&page={page}&size={size}", 
+                .uri("/catalogue-api/products?filter={filter}&detailsFilter={detailsFilter}&page={page}&size={size}",
                      filter, detailsFilter, page, size)
                 .retrieve()
                 .body(PAGINATED_PRODUCTS_TYPE_REFERENCE);

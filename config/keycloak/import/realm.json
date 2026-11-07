@@ -4,8 +4,8 @@
     "displayNameHtml":  "",
     "notBefore":  0,
     "defaultSignatureAlgorithm":  "RS256",
-    "revokeRefreshToken":  false,
-    "refreshTokenMaxReuse":  0,
+    "revokeRefreshToken":  true,
+    "refreshTokenMaxReuse":  1,
     "accessTokenLifespan":  300,
     "accessTokenLifespanForImplicitFlow":  900,
     "ssoSessionIdleTimeout":  1800,
@@ -596,16 +596,97 @@
 
                                                ],
     "users":  [
-
+                  {
+                      "username":  "vlad",
+                      "enabled":  true,
+                      "emailVerified":  true,
+                      "firstName":  "Vlad",
+                      "lastName":  "Manager",
+                      "email":  "vlad@example.com",
+                      "groups":  [
+                                     "/Managers"
+                                 ],
+                      "credentials":  [
+                                          {
+                                              "type":  "password",
+                                              "value":  "password1234",
+                                              "temporary":  false
+                                          }
+                                      ]
+                  },
+                  {
+                      "username":  "diana",
+                      "enabled":  true,
+                      "emailVerified":  true,
+                      "firstName":  "Diana",
+                      "lastName":  "Customer",
+                      "email":  "diana@example.com",
+                      "groups":  [
+                                     "/Customers"
+                                 ],
+                      "credentials":  [
+                                          {
+                                              "type":  "password",
+                                              "value":  "password1234",
+                                              "temporary":  false
+                                          }
+                                      ]
+                  },
+                  {
+                      "username":  "manager1",
+                      "enabled":  true,
+                      "emailVerified":  true,
+                      "firstName":  "Manager",
+                      "lastName":  "One",
+                      "email":  "manager1@example.com",
+                      "groups":  [
+                                     "/Managers"
+                                 ],
+                      "credentials":  [
+                                          {
+                                              "type":  "password",
+                                              "value":  "Password12345!",
+                                              "temporary":  false
+                                          }
+                                      ]
+                  },
+                  {
+                      "username":  "customer1",
+                      "enabled":  true,
+                      "emailVerified":  true,
+                      "firstName":  "Customer",
+                      "lastName":  "One",
+                      "email":  "customer1@example.com",
+                      "groups":  [
+                                     "/Customers"
+                                 ],
+                      "credentials":  [
+                                          {
+                                              "type":  "password",
+                                              "value":  "Password12345!",
+                                              "temporary":  false
+                                          }
+                                      ]
+                  },
+                  {
+                      "username":  "egor",
+                      "enabled":  true,
+                      "emailVerified":  true,
+                      "firstName":  "Egor",
+                      "lastName":  "Customer",
+                      "email":  "egor@example.com",
+                      "groups":  [
+                                     "/Customers"
+                                 ],
+                      "credentials":  [
+                                          {
+                                              "type":  "password",
+                                              "value":  "password1234",
+                                              "temporary":  false
+                                          }
+                                      ]
+                  }
               ],
-    "scopeMappings":  [
-                          {
-                              "clientScope":  "offline_access",
-                              "roles":  [
-                                            "offline_access"
-                                        ]
-                          }
-                      ],
     "clientScopeMappings":  {
                                 "account":  [
                                                 {
@@ -843,38 +924,52 @@
                         "consentRequired":  false,
                         "standardFlowEnabled":  true,
                         "implicitFlowEnabled":  false,
-                        "directAccessGrantsEnabled":  true,
+                        "directAccessGrantsEnabled":  false,
                         "serviceAccountsEnabled":  false,
                         "publicClient":  false,
                         "frontchannelLogout":  true,
                         "protocol":  "openid-connect",
-                        "attributes":  {
-                                           "oidc.ciba.grant.enabled":  "false",
-                                           "oauth2.device.authorization.grant.enabled":  "false",
-                                           "client.secret.creation.time":  "1778717323",
-                                           "backchannel.logout.session.required":  "true",
-                                           "backchannel.logout.revoke.offline.tokens":  "false"
-                                       },
                         "authenticationFlowBindingOverrides":  {
 
                                                                },
-                        "fullScopeAllowed":  true,
                         "nodeReRegistrationTimeout":  -1,
                         "defaultClientScopes":  [
                                                     "web-origins",
                                                     "acr",
                                                     "roles",
                                                     "profile",
-                                                    "email"
+                                                    "email",
+                                                    "view_catalogue",
+                                                    "microprofile-jwt"
                                                 ],
                         "optionalClientScopes":  [
-                                                     "edit_catalogue",
                                                      "address",
                                                      "phone",
-                                                     "offline_access",
-                                                     "view_catalogue",
-                                                     "microprofile-jwt"
-                                                 ]
+                                                     "offline_access"
+                                                 ],
+                        "protocolMappers":  [
+                                                {
+                                                    "name":  "catalogue-audience",
+                                                    "protocol":  "openid-connect",
+                                                    "protocolMapper":  "oidc-audience-mapper",
+                                                    "consentRequired":  false,
+                                                    "config":  {
+                                                                   "included.client.audience":  "catalogue-service",
+                                                                   "id.token.claim":  "false",
+                                                                   "access.token.claim":  "true",
+                                                                   "introspection.token.claim":  "true"
+                                                               }
+                                                }
+                                            ],
+                        "attributes":  {
+                                           "oidc.ciba.grant.enabled":  "false",
+                                           "oauth2.device.authorization.grant.enabled":  "false",
+                                           "client.secret.creation.time":  "1778717323",
+                                           "backchannel.logout.session.required":  "true",
+                                           "backchannel.logout.revoke.offline.tokens":  "false",
+                                           "post.logout.redirect.uris":  "http://localhost:8083/*"
+                                       },
+                        "fullScopeAllowed":  false
                     },
                     {
                         "id":  "287025a9-4b32-4efc-b943-49f368a1ae05",
@@ -905,18 +1000,25 @@
                         "publicClient":  false,
                         "frontchannelLogout":  true,
                         "protocol":  "openid-connect",
-                        "attributes":  {
-                                           "oidc.ciba.grant.enabled":  "false",
-                                           "oauth2.device.authorization.grant.enabled":  "false",
-                                           "client.secret.creation.time":  "1778584284",
-                                           "backchannel.logout.session.required":  "true",
-                                           "backchannel.logout.revoke.offline.tokens":  "false"
-                                       },
                         "authenticationFlowBindingOverrides":  {
 
                                                                },
-                        "fullScopeAllowed":  true,
                         "nodeReRegistrationTimeout":  -1,
+                        "defaultClientScopes":  [
+                                                    "web-origins",
+                                                    "acr",
+                                                    "roles",
+                                                    "profile",
+                                                    "email"
+                                                ],
+                        "optionalClientScopes":  [
+                                                     "edit_catalogue",
+                                                     "address",
+                                                     "phone",
+                                                     "offline_access",
+                                                     "view_catalogue",
+                                                     "microprofile-jwt"
+                                                 ],
                         "protocolMappers":  [
                                                 {
                                                     "id":  "e537d6d2-5abb-4799-b42c-aa6a06125c86",
@@ -962,23 +1064,29 @@
                                                                    "claim.name":  "clientHost",
                                                                    "jsonType.label":  "String"
                                                                }
+                                                },
+                                                {
+                                                    "name":  "catalogue-audience",
+                                                    "protocol":  "openid-connect",
+                                                    "protocolMapper":  "oidc-audience-mapper",
+                                                    "consentRequired":  false,
+                                                    "config":  {
+                                                                   "included.client.audience":  "catalogue-service",
+                                                                   "id.token.claim":  "false",
+                                                                   "access.token.claim":  "true",
+                                                                   "introspection.token.claim":  "true"
+                                                               }
                                                 }
                                             ],
-                        "defaultClientScopes":  [
-                                                    "web-origins",
-                                                    "acr",
-                                                    "roles",
-                                                    "profile",
-                                                    "email"
-                                                ],
-                        "optionalClientScopes":  [
-                                                     "edit_catalogue",
-                                                     "address",
-                                                     "phone",
-                                                     "offline_access",
-                                                     "view_catalogue",
-                                                     "microprofile-jwt"
-                                                 ]
+                        "attributes":  {
+                                           "oidc.ciba.grant.enabled":  "false",
+                                           "oauth2.device.authorization.grant.enabled":  "false",
+                                           "client.secret.creation.time":  "1778584284",
+                                           "backchannel.logout.session.required":  "true",
+                                           "backchannel.logout.revoke.offline.tokens":  "false",
+                                           "post.logout.redirect.uris":  "http://localhost:8080/*"
+                                       },
+                        "fullScopeAllowed":  false
                     },
                     {
                         "id":  "7ee84675-8225-492e-b0ce-fc438991b520",
@@ -1092,6 +1200,45 @@
                                                      "offline_access",
                                                      "microprofile-jwt"
                                                  ]
+                    },
+                    {
+                        "clientId":  "catalogue-service",
+                        "name":  "Catalogue Service",
+                        "enabled":  true,
+                        "protocol":  "openid-connect",
+                        "publicClient":  false,
+                        "bearerOnly":  true,
+                        "standardFlowEnabled":  false,
+                        "implicitFlowEnabled":  false,
+                        "directAccessGrantsEnabled":  false,
+                        "serviceAccountsEnabled":  false,
+                        "redirectUris":  [
+
+                                         ],
+                        "webOrigins":  [
+
+                                       ],
+                        "attributes":  {
+                                           "post.logout.redirect.uris":  ""
+                                       },
+                        "defaultClientScopes":  [
+                                                    "web-origins",
+                                                    "acr",
+                                                    "roles",
+                                                    "profile",
+                                                    "email"
+                                                ],
+                        "optionalClientScopes":  [
+                                                     "address",
+                                                     "phone",
+                                                     "offline_access",
+                                                     "view_catalogue",
+                                                     "edit_catalogue",
+                                                     "microprofile-jwt"
+                                                 ],
+                        "protocolMappers":  [
+
+                                            ]
                     }
                 ],
     "clientScopes":  [
@@ -1685,15 +1832,15 @@
     "smtpServer":  {
 
                    },
-    "eventsEnabled":  false,
+    "eventsEnabled":  true,
     "eventsListeners":  [
                             "jboss-logging"
                         ],
     "enabledEventTypes":  [
 
                           ],
-    "adminEventsEnabled":  false,
-    "adminEventsDetailsEnabled":  false,
+    "adminEventsEnabled":  true,
+    "adminEventsDetailsEnabled":  true,
     "identityProviders":  [
 
                           ],
@@ -2545,7 +2692,6 @@
                        "frontendUrl":  "",
                        "acr.loa.map":  "{}"
                    },
-    "keycloakVersion":  "23.0.7",
     "userManagedAccessAllowed":  false,
     "clientProfiles":  {
                            "profiles":  [
@@ -2556,5 +2702,27 @@
                            "policies":  [
 
                                         ]
-                       }
+                       },
+    "passwordPolicy":  "length(12) and notUsername and notEmail and passwordHistory(3)",
+    "keycloakVersion":  "26.8.2",
+    "scopeMappings":  [
+                          {
+                              "clientScope":  "offline_access",
+                              "roles":  [
+                                            "offline_access"
+                                        ]
+                          },
+                          {
+                              "client":  "manager-app",
+                              "roles":  [
+                                            "ROLE_MANAGER"
+                                        ]
+                          },
+                          {
+                              "client":  "customer-app",
+                              "roles":  [
+                                            "ROLE_CUSTOMER"
+                                        ]
+                          }
+                      ]
 }

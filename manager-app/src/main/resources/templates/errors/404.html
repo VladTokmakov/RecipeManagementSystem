@@ -1,11 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title data-th-text="#{'errors.404.title'}"></title>
+    <title data-th-text="#{'errors.404.title'}">Ничего не нашлось</title>
+    <link rel="stylesheet" data-th-href="@{/styles.css}">
 </head>
 <body>
-<h1 data-th-text="#{'errors.404.header'}"></h1>
-<h2 data-th-text="${error}"></h2>
+<nav class="navbar">
+    <div class="nav-links">
+        <a data-th-href="@{/catalogue/products/list}">Список рецептов</a>
+        <a data-th-href="@{/catalogue/products/create}">+ Создать рецепт</a>
+        <form method="post" data-th-action="@{/logout}" style="display: inline;">
+            <button type="submit" class="nav-logout">Выйти</button>
+        </form>
+    </div>
+</nav>
+
+<div class="main-content recipe-detail-container">
+    <a data-th-href="@{/catalogue/products/list}" class="back-link">&larr; К списку рецептов</a>
+    <div class="recipe-detail-header">
+        <h1 class="recipe-detail-title" data-th-text="#{'errors.404.header'}">Ошибка 404</h1>
+        <p class="recipe-detail-description">
+            Такого рецепта нет — возможно, он был удалён или ссылка устарела.
+        </p>
+        <p class="recipe-detail-description" data-th-if="${error != null}" data-th-text="${error}"></p>
+    </div>
+</div>
 </body>
 </html>
