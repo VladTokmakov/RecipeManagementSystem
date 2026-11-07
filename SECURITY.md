@@ -346,21 +346,24 @@ curl.exe -sk "https://localhost/auth/realms/RecipeManagementSystem/.well-known/o
 
 ### 7.5. Swagger закрыт (п. 7)
 
-Доступ к документации защищён **двумя независимыми слоями**:
+Доступ к документации защищён **тем же Keycloak**, что и остальные приложения — без отдельного пароля:
 
-| Слой | Что делает | Где настроено |
+| Что | Как | Где настроено |
 |---|---|---|
-| 1. HTTP Basic на прокси | Не пускает к UI и спецификации без пароля `swagger` | `config/nginx/nginx.conf` (`auth_basic`), `config/nginx/swagger.htpasswd` |
-| 2. OAuth2 в самом Swagger | Кнопка **Authorize** ведёт в Keycloak; токен с ролью `ROLE_MANAGER` даёт право на запись | `catalogue-service/SwaggerConfig.java` |
+| Страница `/swagger-ui/**` и `/v3/api-docs` в браузере | `oauth2Login` в catalogue-service; неаутентифицированный запрос редиректится на страницу входа Keycloak; пускаются только `ROLE_MANAGER` | `catalogue-service/SwaggerLoginConfig.java` |
+| Вызовы API из кнопки **Authorize** | authorization code + PKCE, токен с `aud=catalogue-service` | `catalogue-service/SwaggerConfig.java`, клиент `swagger-ui` |
 
-Почему не `hasRole('MANAGER')` в Spring: браузер не может приложить Bearer-токен к первому запросу `/swagger-ui.html`, поэтому UI был бы недоступен вообще. Роль проверяет прокси, а права на конкретные вызовы API — Spring Security по токену из Swagger.
+Ключевые решения:
 
-- Публичный клиент Keycloak `swagger-ui` (PKCE S256, `fullScopeAllowed=true`), аудиенс-маппер на `catalogue-service`.
+- **Вторая цепочка фильтров** (`@Order(1)`) с `securityMatcher` на Swagger-пути. Основная цепочка остаётся stateless resource-server'ом, поэтому сессия появляется только для страницы документации.
+- **Префикс `/catalogue-auth/`** вместо `/login/oauth2/code/...`: на одном origin `https://localhost` путь `/login/**` уже принадлежит customer-app.
+- **Отдельный конфиденциальный клиент `swagger-login`**, чтобы сервер мог обменять код на токен. Публичный `swagger-ui` остаётся для PKCE-потока внутри UI.
+- **Кука сессии `CATALOGUE_SESSION`** вместо `JSESSIONID` — иначе конфликт с customer-app на том же origin.
+- **Маппер `realm-roles-id-token`** у обоих клиентов: роли читаются из ID-токена (`realm_access.roles`), иначе `hasRole('MANAGER')` не сработает.
 - `SPRINGDOC_ENABLED=true` в `.env` и `.env.example`.
-- Логин и пароль задаются в `.env` (`SWAGGER_USER`, `SWAGGER_PASSWORD`); `scripts/New-Swagger-Password.ps1` при каждом запуске пересоздаёт `config/nginx/swagger.htpasswd` с apr1-хешем. Сам файл в git не попадает.
-- В Swagger: **Authorize** → `vlad` / `password1234`.
+- `SWAGGER_CLIENT_ID` / `SWAGGER_CLIENT_SECRET` в `.env`.
 
-Проверено: без Basic — **401**; с Basic — **200**; authorization-code flow возвращает токен с `aud=catalogue-service` и `realm_access.roles=[ROLE_MANAGER]`; `GET` 200, `POST` 201, `DELETE` 204.
+Проверено: без сессии — редирект на Keycloak и после входа страница **200**; `diana` (покупатель) → **403**; `vlad` (менеджер) → **200**; из UI токен содержит `aud=catalogue-service` и `realm_access.roles=[ROLE_MANAGER]`; `GET` 200, `POST` 201, `DELETE` 204.
 
 ### 7.6. Проверка
 
@@ -368,9 +371,8 @@ curl.exe -sk "https://localhost/auth/realms/RecipeManagementSystem/.well-known/o
 .\start.ps1
 
 curl.exe -sk -o NUL -w "%{http_code}`n" https://localhost/healthz                 # 200
-curl.exe -sk -o NUL -w "%{http_code}`n" https://localhost/v3/api-docs             # 401
-curl.exe -sk -u "swagger:SwaggerManager2026!" -o NUL -w "%{http_code}`n" `
-  https://localhost/swagger-ui/index.html                                          # 200
+curl.exe -sk -o NUL -w "%{http_code}`n" https://localhost/v3/api-docs             # 302 -> Keycloak
+curl.exe -sk -o NUL -w "%{http_code}`n" https://localhost/swagger-ui/index.html   # 302 -> Keycloak
 curl.exe -sk -o NUL -w "%{http_code}`n" https://localhost/auth                     # 301
 curl.exe -sk -D - -o NUL https://localhost/catalogue-api/products?size=1          # заголовки §7.3
 docker exec catalogue-db psql "host=127.0.0.1 dbname=catalogue user=catalogue sslmode=require" `

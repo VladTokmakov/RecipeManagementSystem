@@ -150,18 +150,18 @@ scripts\New-Certs.ps1 (вызывается из start.ps1 автоматиче�
 не попадают.
 
 	Документация API (Swagger UI):
-Swagger открыт в браузере, но закрыт двумя слоями защиты.
+Swagger защищён тем же Keycloak, что и остальные приложения.
 - URL: https://localhost/swagger-ui.html
 - OpenAPI Spec: https://localhost/v3/api-docs
-- вход на страницу: HTTP Basic, логин swagger / SwaggerManager2026!
-  (без пароля -> 401). Логин и пароль задаются в .env
-  (SWAGGER_USER, SWAGGER_PASSWORD), хеш для nginx создаётся
-  скриптом scripts\New-Swagger-Password.ps1 при запуске
-- вход для вызова API: кнопка Authorize -> Keycloak, учётная запись
-  с ролью менеджера (vlad / password1234). Токен выдаётся по
-  authorization code + PKCE, аудиенс catalogue-service
+- при открытии браузер перенаправляет на страницу входа Keycloak;
+  пускаются только менеджеры (vlad / password1234),
+  покупатель получит 403
+- кнопка Authorize внутри UI выдаёт токен по authorization code + PKCE
+  с аудиенсом catalogue-service - им подписываются вызовы API
 - чтобы отключить документацию полностью, задайте
   SPRINGDOC_ENABLED=false в .env
+- отдельного пароля у Swagger больше нет: клиент Keycloak swagger-login,
+  его секрет хранится в .env (SWAGGER_CLIENT_SECRET)
 
         Особенности реализации:
     Фильтрация:

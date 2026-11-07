@@ -1289,6 +1289,89 @@
                                                                    "access.token.claim":  "true",
                                                                    "introspection.token.claim":  "true"
                                                                }
+                                                },
+                                                {
+                                                    "name":  "realm-roles-id-token",
+                                                    "protocol":  "openid-connect",
+                                                    "protocolMapper":  "oidc-usermodel-realm-role-mapper",
+                                                    "consentRequired":  false,
+                                                    "config":  {
+                                                                   "user.attribute":  "foo",
+                                                                   "claim.name":  "realm_access.roles",
+                                                                   "jsonType.label":  "String",
+                                                                   "multivalued":  "true",
+                                                                   "id.token.claim":  "true",
+                                                                   "access.token.claim":  "true",
+                                                                   "introspection.token.claim":  "true"
+                                                               }
+                                                }
+                                            ]
+                    },
+                    {
+                        "clientId":  "swagger-login",
+                        "name":  "Swagger UI (server login)",
+                        "enabled":  true,
+                        "protocol":  "openid-connect",
+                        "publicClient":  false,
+                        "bearerOnly":  false,
+                        "clientAuthenticatorType":  "client-secret",
+                        "secret":  "Zfrg4mgfXsAbuNvIp6Cp4zFbFbjaN6FR",
+                        "standardFlowEnabled":  true,
+                        "implicitFlowEnabled":  false,
+                        "directAccessGrantsEnabled":  false,
+                        "serviceAccountsEnabled":  false,
+                        "consentRequired":  false,
+                        "fullScopeAllowed":  true,
+                        "redirectUris":  [
+                                             "https://localhost/catalogue-auth/login/oauth2/code/keycloak-swagger"
+                                         ],
+                        "webOrigins":  [
+                                           "https://localhost"
+                                       ],
+                        "attributes":  {
+                                           "post.logout.redirect.uris":  "https://localhost/swagger-ui/index.html"
+                                       },
+                        "defaultClientScopes":  [
+                                                    "web-origins",
+                                                    "acr",
+                                                    "roles",
+                                                    "profile",
+                                                    "email"
+                                                ],
+                        "optionalClientScopes":  [
+                                                     "address",
+                                                     "phone",
+                                                     "offline_access",
+                                                     "view_catalogue",
+                                                     "edit_catalogue"
+                                                 ],
+                        "protocolMappers":  [
+                                                {
+                                                    "name":  "catalogue-audience",
+                                                    "protocol":  "openid-connect",
+                                                    "protocolMapper":  "oidc-audience-mapper",
+                                                    "consentRequired":  false,
+                                                    "config":  {
+                                                                   "included.client.audience":  "catalogue-service",
+                                                                   "id.token.claim":  "false",
+                                                                   "access.token.claim":  "true",
+                                                                   "introspection.token.claim":  "true"
+                                                               }
+                                                },
+                                                {
+                                                    "name":  "realm-roles-id-token",
+                                                    "protocol":  "openid-connect",
+                                                    "protocolMapper":  "oidc-usermodel-realm-role-mapper",
+                                                    "consentRequired":  false,
+                                                    "config":  {
+                                                                   "user.attribute":  "foo",
+                                                                   "claim.name":  "realm_access.roles",
+                                                                   "jsonType.label":  "String",
+                                                                   "multivalued":  "true",
+                                                                   "id.token.claim":  "true",
+                                                                   "access.token.claim":  "true",
+                                                                   "introspection.token.claim":  "true"
+                                                               }
                                                 }
                                             ]
                     }
