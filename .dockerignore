@@ -1,0 +1,7 @@
+target/
+**/target/
+.git/
+.idea/
+logs/
+*.md
+project_export.txt

@@ -6,7 +6,7 @@
     а также освобождает порты 8080/8081/8083, если их занял старый процесс.
 
     Параметры:
-      -Docker   также остановить Keycloak и базы данных (docker compose stop)
+      -Docker   также остановить Keycloak, базы данных и HTTPS-прокси (docker compose stop)
                 Данные в томах сохраняются.
 #>
 param(
@@ -111,7 +111,7 @@ if ($Docker) {
     Push-Location $root
     try {
         docker compose stop 2>&1 | Out-Null
-        Write-Ok 'Keycloak и базы данных остановлены'
+        Write-Ok 'Keycloak, базы данных и HTTPS-прокси остановлены'
         Write-Note 'Поднять снова: docker compose up -d'
     }
     finally { Pop-Location }

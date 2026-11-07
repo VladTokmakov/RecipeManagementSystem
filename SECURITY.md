@@ -231,18 +231,20 @@ cd catalogue-service
 
 ---
 
-## 5. Что осталось (остаточный риск)
+## 5. Остаточный риск
+
+Ранее числившиеся здесь пункты TLS, devtools, security-заголовков API, rate limiting в веб-приложениях и открытого Swagger **закрыты** (см. §7).
 
 | # | Риск | Почему не устранено | Что нужно |
 |---|---|---|---|
 | 1 | **Ротация секретов** | Требует действий владельца Keycloak/БД | Сменить client secrets и пароли БД; старое считать скомпрометированным |
 | 2 | Секреты в истории git | История сохранена по требованию владельца | Ротация секретов обязательна: старые значения навсегда остаются в коммитах |
-| 3 | TLS | Нужны сертификаты и решение по топологии | Keycloak за HTTPS, `requiresChannel`, `sslmode=require` (config уже готов к `${KEYCLOAK_ISSUER_URI}` = https) |
-| 4 | Админ `admin/admin` | Пароль задаётся при старте контейнера | `KEYCLOAK_ADMIN_PASSWORD` из `.env` (уже в compose) |
-| 5 | Rate limit в памяти | Для одного инстанса достаточно | Redis/API-gateway при горизонтальном масштабировании |
-| 6 | Data migration `sub` | Существующее избранное привязано к username | Скрипт переноса `preferred_username` → `sub` |
-| 7 | `spring-boot-devtools` в runtime | Требует разделения сборок | Профиль `prod` + `<scope>provided</scope>` |
-| 8 | Импорт realm при `start-dev` | H2-база не переносится между мажорными версиями | Для prod — внешний PostgreSQL + `kc.sh build/start` |
+| 3 | Админ `admin/admin` | Пароль задаётся при старте контейнера | `KEYCLOAK_ADMIN_PASSWORD` из `.env` (уже в compose) |
+| 4 | Rate limit в памяти | Для одного инстанса достаточно | Redis/API-gateway при горизонтальном масштабировании |
+| 5 | Data migration `sub` | Существующее избранное привязано к username | Скрипт переноса `preferred_username` → `sub` |
+| 6 | Импорт realm при `start-dev` | H2-база не переносится между мажорными версиями | Для prod — внешний PostgreSQL + `kc.sh build/start` |
+| 7 | Самоподписанный сертификат | `localhost` не имеет публичного доверия | Для prod — домен + Let's Encrypt, заменить `config/certs` |
+| 8 | `sslmode=require` без проверки CA | Сертификат БД самоподписанный | Указать доверенный CA и `sslmode=verify-full` |
 
 > **Решение владельца:** история git **не переписывается** (нужна для защиты работы). Следствие: секреты, попавшие в коммиты, остаются доступными навсегда. Поэтому п. 1 (ротация) — не «желательно», а **обязателен**: после ротации старые значения в истории бесполезны.
 
@@ -282,6 +284,83 @@ docker compose up -d keycloak
 docker compose logs -f keycloak | Select-String "Import finished"
 
 # Проверки
-curl "http://localhost:8082/realms/RecipeManagementSystem/.well-known/openid-configuration"
-# ожидается issuer: http://localhost:8082/realms/RecipeManagementSystem
+curl.exe -sk "https://localhost/auth/realms/RecipeManagementSystem/.well-known/openid-configuration"
+# ожидается issuer: https://localhost/auth/realms/RecipeManagementSystem
 ```
+
+---
+
+## 7. Закрытые пункты: TLS, devtools, заголовки API, rate limiting, Swagger
+
+### 7.1. TLS (п. 3)
+
+Топология — **один origin `https://localhost`**. Приложения остаются HTTP на loopback, снаружи доступен только прокси.
+
+| Компонент | Порт | Где |
+|---|---|---|
+| `nginx` (TLS-терминация) | 443, 80 → 301 | контейнер `RecipeManagementSystem-proxy` |
+| `customer-app` | 8083 | `127.0.0.1` |
+| `manager-app` (`/manager`) | 8080 | `127.0.0.1` |
+| `catalogue-service` (`/catalogue-api`) | 8081 | `127.0.0.1` |
+| `keycloak` (`/auth`) | 8082 | `127.0.0.1` |
+| `PostgreSQL` | 5432 / 5434 | `127.0.0.1`, SSL включён |
+
+Маршруты прокси: `/` → customer-app, `/manager/` → manager-app, `/catalogue-api/` → catalogue-service, `/auth/` → Keycloak.
+
+Что изменено:
+
+- `config/nginx/nginx.conf` — TLS 1.2/1.3, HSTS, `server_tokens off`, ограничение тела 2 MB, HTTP → HTTPS.
+- `docker-compose.yml` — сервис `proxy` на 443; Keycloak с `KC_HTTP_RELATIVE_PATH=/auth`, `KC_HOSTNAME=https://localhost/auth`, `KC_PROXY_HEADERS=xforwarded`; БД собираются из `config/postgres/Dockerfile` с `ssl=on`.
+- `config/postgres/Dockerfile` — образ Postgres с сертификатом внутри.
+- `scripts/New-Certs.ps1` — генерация `config/certs/{server.crt,server.key,truststore.p12}` (в git не попадают).
+- `start.ps1` — передаёт JVM `-Djavax.net.ssl.trustStore`, иначе самоподписанный сертификат не принимается при обращении к Keycloak.
+- `server.forward-headers-strategy: native` во всех трёх приложениях.
+- `.env`: `COOKIE_SECURE=true`, `KEYCLOAK_ISSUER_URI=https://localhost/auth/...`, `?sslmode=require` в обоих JDBC URL.
+- `realm.json`: `rootUrl`, `adminUrl`, `redirectUris`, `webOrigins`, `post.logout.redirect.uris` переведены на `https://`.
+
+Проверено: `pg_stat_ssl.ssl = t` для TCP-подключения, Discovery Keycloak отдаёт `https://`-эндпоинты, вход в оба приложения идёт через `https://localhost/auth`, `http://localhost` → 301.
+
+### 7.2. devtools (п. 4)
+
+`spring-boot-devtools` переведён с `<scope>runtime</scope>` на `<scope>provided</scope>` в `catalogue-service` и `manager-app` (в `customer-app` зависимости не было). В собранных jar нет ни `devtools`, ни LiveReload — проверено распаковкой.
+
+### 7.3. Security-заголовки API (п. 5)
+
+В `catalogue-service/SecurityBeans.java` добавлен блок `.headers(...)`:
+
+| Заголовок | Значение |
+|---|---|
+| `X-Content-Type-Options` | `nosniff` |
+| `Cache-Control` | `no-store` |
+| `Strict-Transport-Security` | `max-age=31536000; includeSubDomains` |
+| `X-Frame-Options` | `DENY` |
+| `Referrer-Policy` | `no-referrer` |
+
+### 7.4. Rate limiting в веб-приложениях (п. 6)
+
+`RateLimitFilter` добавлен в `manager-app` и `customer-app` (раньше был только в `catalogue-service`). Лимит — 120 запросов в минуту на IP, окно 1 минута, `Retry-After` в ответе 429, статика и страницы ошибок не считаются. Фильтр стоит до Spring Security, поэтому попытки входа и 401 тоже расходуют лимит.
+
+Важно: `trust-forwarded-headers=false`. За прокси IP клиента вычисляет Tomcat (`forward-headers-strategy: native`). Ручное чтение первого значения `X-Forwarded-For` позволило бы подделать IP и обойти лимит.
+
+Проверено: 200 запросов через прокси → 109×302 и 91×429.
+
+### 7.5. Swagger закрыт (п. 7)
+
+- `/swagger-ui.html`, `/swagger-ui/**`, `/v3/api-docs` требуют `hasRole('MANAGER')` вместо `permitAll()`.
+- `SPRINGDOC_ENABLED=false` в `.env` и `.env.example`.
+
+Проверено: без токена — **401**, с токеном без роли MANAGER — **403**.
+
+### 7.6. Проверка
+
+```powershell
+.\start.ps1
+
+curl.exe -sk -o NUL -w "%{http_code}`n" https://localhost/healthz                 # 200
+curl.exe -sk -o NUL -w "%{http_code}`n" https://localhost/v3/api-docs             # 401
+curl.exe -sk -D - -o NUL https://localhost/catalogue-api/products?size=1          # заголовки §7.3
+docker exec catalogue-db psql "host=127.0.0.1 dbname=catalogue user=catalogue sslmode=require" `
+  -c "SELECT ssl FROM pg_stat_ssl WHERE pid = pg_backend_pid();"                  # t
+```
+
+Сертификат самоподписанный: браузер покажет предупреждение. Для доверия импортируйте `config/certs/server.crt` в хранилище ОС.

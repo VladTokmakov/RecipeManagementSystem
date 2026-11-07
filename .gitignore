@@ -49,3 +49,7 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+config/certs/*.key
+config/certs/*.p12
+config/certs/server.crt

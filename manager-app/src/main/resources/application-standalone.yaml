@@ -1,4 +1,8 @@
 vlad:
+    security:
+        rate-limit:
+            requests-per-minute: ${RATE_LIMIT_REQUESTS_PER_MINUTE:120}
+            trust-forwarded-headers: ${RATE_LIMIT_TRUST_FORWARDED:false}
     services:
         catalogue:
             uri: ${CATALOGUE_URI:http://localhost:8081}
@@ -13,12 +17,13 @@ spring:
             client:
                 provider:
                     keycloak:
-                        issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8082/realms/RecipeManagementSystem}
-                        user-name-attribute: preferred_username
+                        issuer-uri: ${KEYCLOAK_ISSUER_URI:https://localhost/auth/realms/RecipeManagementSystem}
+                        user-name-attribute: sub
                 registration:
                     keycloak:
                         client-id: ${KEYCLOAK_MANAGER_CLIENT_ID:manager-app}
                         client-secret: ${KEYCLOAK_MANAGER_CLIENT_SECRET}
+                        redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
                         scope:
                             - openid
                             - view_catalogue
@@ -27,9 +32,12 @@ spring:
     jpa:
         open-in-view: false
 server:
+    address: 127.0.0.1
     port: 8080
+    forward-headers-strategy: native
     max-http-request-header-size: 8KB
     servlet:
+        context-path: /manager
         session:
             timeout: 30m
             cookie:

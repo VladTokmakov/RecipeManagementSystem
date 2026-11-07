@@ -20,7 +20,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8082/realms/RecipeManagementSystem}
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:https://localhost/auth/realms/RecipeManagementSystem}
 
 vlad:
   security:
@@ -30,7 +30,9 @@ vlad:
       trust-forwarded-headers: ${RATE_LIMIT_TRUST_FORWARDED:false}
 
 server:
+  address: 127.0.0.1
   port: 8081
+  forward-headers-strategy: native
   max-http-request-header-size: 8KB
   error:
     include-message: never

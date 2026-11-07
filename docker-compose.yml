@@ -1,4 +1,26 @@
 services:
+  proxy:
+    image: nginx:alpine
+    container_name: RecipeManagementSystem-proxy
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:443:443"
+      - "127.0.0.1:80:80"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./config/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./config/certs/server.crt:/etc/nginx/certs/server.crt:ro
+      - ./config/certs/server.key:/etc/nginx/certs/server.key:ro
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null --no-check-certificate https://127.0.0.1/healthz || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
   keycloak:
     image: quay.io/keycloak/keycloak:26.8.2
     container_name: RecipeManagementSystem-keycloak
@@ -7,20 +29,26 @@ services:
       KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN:-admin}
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:?Задайте KEYCLOAK_ADMIN_PASSWORD в .env}
       KC_HEALTH_ENABLED: "true"
+      KC_HTTP_RELATIVE_PATH: /auth
+      KC_HOSTNAME: https://localhost/auth
+      KC_PROXY_HEADERS: xforwarded
     ports:
       - "127.0.0.1:8082:8080"
     volumes:
       - ./config/keycloak/import:/opt/keycloak/data/import:ro
     healthcheck:
-      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/9000 && echo -e 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && cat <&3 | grep -q 'UP'"]
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/9000 && echo -e 'GET /auth/health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && cat <&3 | grep -q 'UP'"]
       interval: 15s
       timeout: 5s
       retries: 20
       start_period: 60s
 
   catalogue-db:
-    image: postgres:16
+    build:
+      context: .
+      dockerfile: config/postgres/Dockerfile
     container_name: catalogue-db
+    command: ["postgres", "-c", "ssl=on", "-c", "ssl_cert_file=/etc/postgresql/certs/server.crt", "-c", "ssl_key_file=/etc/postgresql/certs/server.key"]
     environment:
       POSTGRES_USER: ${CATALOGUE_DB_USERNAME:-catalogue}
       POSTGRES_PASSWORD: ${CATALOGUE_DB_PASSWORD:?Задайте CATALOGUE_DB_PASSWORD в .env}
@@ -31,8 +59,11 @@ services:
       - catalogue-db-data:/var/lib/postgresql/data
 
   customer-app-db:
-    image: postgres:16
+    build:
+      context: .
+      dockerfile: config/postgres/Dockerfile
     container_name: customer-app-db
+    command: ["postgres", "-c", "ssl=on", "-c", "ssl_cert_file=/etc/postgresql/certs/server.crt", "-c", "ssl_key_file=/etc/postgresql/certs/server.key"]
     environment:
       POSTGRES_USER: ${CUSTOMER_DB_USERNAME:-customer_app}
       POSTGRES_PASSWORD: ${CUSTOMER_DB_PASSWORD:?Задайте CUSTOMER_DB_PASSWORD в .env}

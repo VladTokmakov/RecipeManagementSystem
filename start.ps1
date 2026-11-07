@@ -111,10 +111,29 @@ if (-not $javaExe -or -not (Test-Path $javaExe)) {
 Write-Ok $javaExe
 
 # --------------------------------------------------------------------------
-# 1. Docker: Keycloak + PostgreSQL
+# 0.2. Сертификаты и truststore для HTTPS
+# --------------------------------------------------------------------------
+Write-Step 'Проверка сертификатов TLS'
+$certsDir  = Join-Path $root 'config\certs'
+$certFile  = Join-Path $certsDir 'server.crt'
+$trustFile = Join-Path $certsDir 'truststore.p12'
+if (-not (Test-Path $certFile) -or -not (Test-Path $trustFile)) {
+    Write-Note 'Сертификатов нет — создаю.'
+    $certScript = Join-Path $root 'scripts\New-Certs.ps1'
+    $certResult = Invoke-External -Command { & powershell -NoProfile -ExecutionPolicy Bypass -File $certScript }
+    if ($certResult.ExitCode -ne 0 -or -not (Test-Path $trustFile)) {
+        Write-Note 'Не удалось подготовить сертификаты.'
+        ($certResult.Output -split "`r?`n" | Select-Object -Last 10) | ForEach-Object { Write-Note $_ }
+        exit 1
+    }
+}
+Write-Ok 'сертификаты на месте'
+
+# --------------------------------------------------------------------------
+# 1. Docker: Keycloak, PostgreSQL и HTTPS-прокси
 # --------------------------------------------------------------------------
 if (-not $SkipDocker) {
-    Write-Step 'Запуск Keycloak и баз данных (docker compose up -d)'
+    Write-Step 'Запуск Keycloak, баз данных и HTTPS-прокси (docker compose up -d)'
     $docker = Invoke-External -WorkDir $root -Command { docker compose up -d }
     if ($docker.ExitCode -ne 0) {
         Write-Note 'docker compose завершился с ошибкой. Проверьте, запущен ли Docker Desktop.'
@@ -128,14 +147,11 @@ if (-not $SkipDocker) {
 # 2. Ожидание готовности Keycloak
 # --------------------------------------------------------------------------
 Write-Step 'Ожидание Keycloak (realm RecipeManagementSystem)'
-$realmUrl = 'http://localhost:8082/realms/RecipeManagementSystem/.well-known/openid-configuration'
+$realmUrl = 'https://localhost/auth/realms/RecipeManagementSystem/.well-known/openid-configuration'
 $ready = $false
 for ($i = 0; $i -lt 90; $i++) {
-    try {
-        $resp = Invoke-WebRequest -Uri $realmUrl -UseBasicParsing -TimeoutSec 3
-        if ($resp.StatusCode -eq 200) { $ready = $true; break }
-    }
-    catch { }
+    $code = & curl.exe -sk -o NUL -w '%{http_code}' $realmUrl 2>$null
+    if ($code -eq '200') { $ready = $true; break }
     Start-Sleep -Seconds 2
 }
 if (-not $ready) {
@@ -212,7 +228,10 @@ foreach ($app in $apps) {
     $outLog    = Join-Path $logDir ($app.Name + '.log')
     $errLog    = Join-Path $logDir ($app.Name + '.err.log')
 
-    $argList = @('-jar', $app.Jar)
+    $argList = @('-Djavax.net.ssl.trustStore=' + $trustFile)
+    $argList += '-Djavax.net.ssl.trustStorePassword=changeit'
+    $argList += '-Djavax.net.ssl.trustStoreType=PKCS12'
+    $argList += @('-jar', $app.Jar)
     if ($app.Profile) { $argList += ('--spring.profiles.active=' + $app.Profile) }
 
     $proc = Start-Process -FilePath $javaExe `
@@ -263,10 +282,9 @@ foreach ($app in $apps) {
 }
 
 Write-Host ''
-Write-Host '    Менеджер:  http://localhost:8080' -ForegroundColor White
-Write-Host '    Покупатель: http://localhost:8083' -ForegroundColor White
-Write-Host '    Swagger:   http://localhost:8081/swagger-ui.html' -ForegroundColor White
-Write-Host '    Keycloak:  http://localhost:8082' -ForegroundColor White
+Write-Host '    Менеджер:   https://localhost/manager' -ForegroundColor White
+Write-Host '    Покупатель: https://localhost' -ForegroundColor White
+Write-Host '    Keycloak:   https://localhost/auth' -ForegroundColor White
 Write-Host ''
 Write-Host '    Остановить: .\stop.ps1' -ForegroundColor DarkGray
 Write-Host '    Логи:       logs\' -ForegroundColor DarkGray

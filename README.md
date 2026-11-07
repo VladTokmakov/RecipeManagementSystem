@@ -120,8 +120,9 @@
 - .\stop.ps1                остановить приложения (порты 8080/8081/8083)
 - .\stop.ps1 -Docker        дополнительно остановить контейнеры (данные сохраняются)
 	Что делают скрипты:
-- start.ps1 проверяет .env, поднимает docker compose, ждёт готовности realm Keycloak,
-  при необходимости собирает jar и запускает приложения скрытыми процессами java -jar.
+- start.ps1 проверяет .env, готовит сертификаты TLS, поднимает docker compose,
+  ждёт готовности realm Keycloak, при необходимости собирает jar и запускает
+  приложения скрытыми процессами java -jar.
   Процессы не привязаны к окну терминала и работают после его закрытия.
 - jar пересобирается автоматически, если исходники или ресурсы новее него,
   поэтому не бывает запуска устаревшей сборки.
@@ -132,13 +133,28 @@
   Процессы, запущенные из IntelliJ IDEA или не относящиеся к проекту, не затрагиваются.
 
 	Учётные записи для проверки:
-- vlad / password1234   — менеджер (manager-app, порт 8080)
-- diana / password1234  — покупатель (customer-app, порт 8083)
+- vlad / password1234   — менеджер (manager-app)
+- diana / password1234  — покупатель (customer-app)
+
+	Адреса стенда (HTTPS):
+- https://localhost             — customer-app
+- https://localhost/manager     — manager-app
+- https://localhost/auth        — Keycloak
+- https://localhost/catalogue-api — REST API
+
+HTTP-запросы на порт 80 перенаправляются на HTTPS (301).
+Сертификат самоподписанный: при первом открытии браузер покажет
+предупреждение. Чтобы его убрать, импортируйте config\certs\server.crt
+в хранилище сертификатов ОС. Сертификаты создаются скриптом
+scripts\New-Certs.ps1 (вызывается из start.ps1 автоматически) и в git
+не попадают.
 
 	Документация API:
-Catalogue Service предоставляет документацию Swagger UI:
-- URL: http://localhost:8081/swagger-ui.html
-- OpenAPI Spec: http://localhost:8081/v3/api-docs
+Catalogue Service предоставляет Swagger UI, но он закрыт ролью MANAGER:
+- URL: https://localhost/swagger-ui.html
+- OpenAPI Spec: https://localhost/v3/api-docs
+- без токена -> 401, с токеном без роли MANAGER -> 403
+- чтобы отключить полностью, задайте SPRINGDOC_ENABLED=false в .env
 
         Особенности реализации:
     Фильтрация:

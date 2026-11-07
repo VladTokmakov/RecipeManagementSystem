@@ -905,8 +905,8 @@
                         "clientId":  "customer-app",
                         "name":  "",
                         "description":  "",
-                        "rootUrl":  "http://localhost:8083",
-                        "adminUrl":  "http://localhost:8083",
+                        "rootUrl":  "https://localhost",
+                        "adminUrl":  "https://localhost",
                         "baseUrl":  "",
                         "surrogateAuthRequired":  false,
                         "enabled":  true,
@@ -914,10 +914,10 @@
                         "clientAuthenticatorType":  "client-secret",
                         "secret":  "Plyv3Jyjbw0Fomg9O7OIRGOjgt2E9Bky",
                         "redirectUris":  [
-                                             "http://localhost:8083/login/oauth2/code/keycloak"
+                                             "https://localhost/login/oauth2/code/keycloak"
                                          ],
                         "webOrigins":  [
-                                           "http://localhost:8083"
+                                           "https://localhost"
                                        ],
                         "notBefore":  0,
                         "bearerOnly":  false,
@@ -967,7 +967,7 @@
                                            "client.secret.creation.time":  "1778717323",
                                            "backchannel.logout.session.required":  "true",
                                            "backchannel.logout.revoke.offline.tokens":  "false",
-                                           "post.logout.redirect.uris":  "http://localhost:8083/*"
+                                           "post.logout.redirect.uris":  "https://localhost/*"
                                        },
                         "fullScopeAllowed":  false
                     },
@@ -976,8 +976,8 @@
                         "clientId":  "manager-app",
                         "name":  "",
                         "description":  "",
-                        "rootUrl":  "http://localhost:8080",
-                        "adminUrl":  "http://localhost:8080",
+                        "rootUrl":  "https://localhost/manager",
+                        "adminUrl":  "https://localhost/manager",
                         "baseUrl":  "",
                         "surrogateAuthRequired":  false,
                         "enabled":  true,
@@ -985,10 +985,10 @@
                         "clientAuthenticatorType":  "client-secret",
                         "secret":  "cMguYKMXt8XBzQ1OHtFXaioTCXywQFxz",
                         "redirectUris":  [
-                                             "http://localhost:8080/*"
+                                             "https://localhost/manager/login/oauth2/code/keycloak"
                                          ],
                         "webOrigins":  [
-                                           "http://localhost:8080"
+                                           "https://localhost"
                                        ],
                         "notBefore":  0,
                         "bearerOnly":  false,
@@ -1084,7 +1084,7 @@
                                            "client.secret.creation.time":  "1778584284",
                                            "backchannel.logout.session.required":  "true",
                                            "backchannel.logout.revoke.offline.tokens":  "false",
-                                           "post.logout.redirect.uris":  "http://localhost:8080/*"
+                                           "post.logout.redirect.uris":  "https://localhost/manager/*"
                                        },
                         "fullScopeAllowed":  false
                     },
