@@ -346,10 +346,21 @@ curl.exe -sk "https://localhost/auth/realms/RecipeManagementSystem/.well-known/o
 
 ### 7.5. Swagger закрыт (п. 7)
 
-- `/swagger-ui.html`, `/swagger-ui/**`, `/v3/api-docs` требуют `hasRole('MANAGER')` вместо `permitAll()`.
-- `SPRINGDOC_ENABLED=false` в `.env` и `.env.example`.
+Доступ к документации защищён **двумя независимыми слоями**:
 
-Проверено: без токена — **401**, с токеном без роли MANAGER — **403**.
+| Слой | Что делает | Где настроено |
+|---|---|---|
+| 1. HTTP Basic на прокси | Не пускает к UI и спецификации без пароля `swagger` | `config/nginx/nginx.conf` (`auth_basic`), `config/nginx/swagger.htpasswd` |
+| 2. OAuth2 в самом Swagger | Кнопка **Authorize** ведёт в Keycloak; токен с ролью `ROLE_MANAGER` даёт право на запись | `catalogue-service/SwaggerConfig.java` |
+
+Почему не `hasRole('MANAGER')` в Spring: браузер не может приложить Bearer-токен к первому запросу `/swagger-ui.html`, поэтому UI был бы недоступен вообще. Роль проверяет прокси, а права на конкретные вызовы API — Spring Security по токену из Swagger.
+
+- Публичный клиент Keycloak `swagger-ui` (PKCE S256, `fullScopeAllowed=true`), аудиенс-маппер на `catalogue-service`.
+- `SPRINGDOC_ENABLED=true` в `.env` и `.env.example`.
+- Логин и пароль задаются в `.env` (`SWAGGER_USER`, `SWAGGER_PASSWORD`); `scripts/New-Swagger-Password.ps1` при каждом запуске пересоздаёт `config/nginx/swagger.htpasswd` с apr1-хешем. Сам файл в git не попадает.
+- В Swagger: **Authorize** → `vlad` / `password1234`.
+
+Проверено: без Basic — **401**; с Basic — **200**; authorization-code flow возвращает токен с `aud=catalogue-service` и `realm_access.roles=[ROLE_MANAGER]`; `GET` 200, `POST` 201, `DELETE` 204.
 
 ### 7.6. Проверка
 
@@ -358,6 +369,9 @@ curl.exe -sk "https://localhost/auth/realms/RecipeManagementSystem/.well-known/o
 
 curl.exe -sk -o NUL -w "%{http_code}`n" https://localhost/healthz                 # 200
 curl.exe -sk -o NUL -w "%{http_code}`n" https://localhost/v3/api-docs             # 401
+curl.exe -sk -u "swagger:SwaggerManager2026!" -o NUL -w "%{http_code}`n" `
+  https://localhost/swagger-ui/index.html                                          # 200
+curl.exe -sk -o NUL -w "%{http_code}`n" https://localhost/auth                     # 301
 curl.exe -sk -D - -o NUL https://localhost/catalogue-api/products?size=1          # заголовки §7.3
 docker exec catalogue-db psql "host=127.0.0.1 dbname=catalogue user=catalogue sslmode=require" `
   -c "SELECT ssl FROM pg_stat_ssl WHERE pid = pg_backend_pid();"                  # t

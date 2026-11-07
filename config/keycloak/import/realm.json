@@ -1239,6 +1239,58 @@
                         "protocolMappers":  [
 
                                             ]
+                    },
+                    {
+                        "clientId":  "swagger-ui",
+                        "name":  "Swagger UI",
+                        "enabled":  true,
+                        "protocol":  "openid-connect",
+                        "publicClient":  true,
+                        "bearerOnly":  false,
+                        "standardFlowEnabled":  true,
+                        "implicitFlowEnabled":  false,
+                        "directAccessGrantsEnabled":  false,
+                        "serviceAccountsEnabled":  false,
+                        "consentRequired":  false,
+                        "fullScopeAllowed":  true,
+                        "redirectUris":  [
+                                             "https://localhost/swagger-ui/oauth2-redirect.html"
+                                         ],
+                        "webOrigins":  [
+                                           "https://localhost"
+                                       ],
+                        "attributes":  {
+                                           "pkce.code.challenge.method":  "S256",
+                                           "post.logout.redirect.uris":  "https://localhost/*"
+                                       },
+                        "defaultClientScopes":  [
+                                                    "web-origins",
+                                                    "acr",
+                                                    "roles",
+                                                    "profile",
+                                                    "email",
+                                                    "view_catalogue",
+                                                    "edit_catalogue"
+                                                ],
+                        "optionalClientScopes":  [
+                                                     "address",
+                                                     "phone",
+                                                     "offline_access"
+                                                 ],
+                        "protocolMappers":  [
+                                                {
+                                                    "name":  "catalogue-audience",
+                                                    "protocol":  "openid-connect",
+                                                    "protocolMapper":  "oidc-audience-mapper",
+                                                    "consentRequired":  false,
+                                                    "config":  {
+                                                                   "included.client.audience":  "catalogue-service",
+                                                                   "id.token.claim":  "false",
+                                                                   "access.token.claim":  "true",
+                                                                   "introspection.token.claim":  "true"
+                                                               }
+                                                }
+                                            ]
                     }
                 ],
     "clientScopes":  [

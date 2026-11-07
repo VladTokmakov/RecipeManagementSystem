@@ -28,6 +28,9 @@ vlad:
     rate-limit:
       requests-per-minute: ${RATE_LIMIT_REQUESTS_PER_MINUTE:120}
       trust-forwarded-headers: ${RATE_LIMIT_TRUST_FORWARDED:false}
+  swagger:
+    auth-url: ${SWAGGER_AUTH_URL:https://localhost/auth/realms/RecipeManagementSystem/protocol/openid-connect/auth}
+    token-url: ${SWAGGER_TOKEN_URL:https://localhost/auth/realms/RecipeManagementSystem/protocol/openid-connect/token}
 
 server:
   address: 127.0.0.1

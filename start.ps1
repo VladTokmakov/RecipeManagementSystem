@@ -130,6 +130,20 @@ if (-not (Test-Path $certFile) -or -not (Test-Path $trustFile)) {
 Write-Ok 'сертификаты на месте'
 
 # --------------------------------------------------------------------------
+# 0.3. Пароль Swagger UI (HTTP Basic на прокси)
+# --------------------------------------------------------------------------
+Write-Step 'Пароль Swagger UI'
+$swaggerScript = Join-Path $root 'scripts\New-Swagger-Password.ps1'
+$swaggerResult = Invoke-External -Command { & powershell -NoProfile -ExecutionPolicy Bypass -File $swaggerScript }
+if ($swaggerResult.ExitCode -ne 0) {
+    Write-Note 'Не удалось подготовить пароль Swagger.'
+    ($swaggerResult.Output -split "`r?`n" | Select-Object -Last 5) | ForEach-Object { Write-Note $_ }
+}
+else {
+    Write-Ok 'пароль подготовлен'
+}
+
+# --------------------------------------------------------------------------
 # 1. Docker: Keycloak, PostgreSQL и HTTPS-прокси
 # --------------------------------------------------------------------------
 if (-not $SkipDocker) {

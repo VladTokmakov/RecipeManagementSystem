@@ -149,12 +149,19 @@ HTTP-запросы на порт 80 перенаправляются на HTTPS
 scripts\New-Certs.ps1 (вызывается из start.ps1 автоматически) и в git
 не попадают.
 
-	Документация API:
-Catalogue Service предоставляет Swagger UI, но он закрыт ролью MANAGER:
+	Документация API (Swagger UI):
+Swagger открыт в браузере, но закрыт двумя слоями защиты.
 - URL: https://localhost/swagger-ui.html
 - OpenAPI Spec: https://localhost/v3/api-docs
-- без токена -> 401, с токеном без роли MANAGER -> 403
-- чтобы отключить полностью, задайте SPRINGDOC_ENABLED=false в .env
+- вход на страницу: HTTP Basic, логин swagger / SwaggerManager2026!
+  (без пароля -> 401). Логин и пароль задаются в .env
+  (SWAGGER_USER, SWAGGER_PASSWORD), хеш для nginx создаётся
+  скриптом scripts\New-Swagger-Password.ps1 при запуске
+- вход для вызова API: кнопка Authorize -> Keycloak, учётная запись
+  с ролью менеджера (vlad / password1234). Токен выдаётся по
+  authorization code + PKCE, аудиенс catalogue-service
+- чтобы отключить документацию полностью, задайте
+  SPRINGDOC_ENABLED=false в .env
 
         Особенности реализации:
     Фильтрация:

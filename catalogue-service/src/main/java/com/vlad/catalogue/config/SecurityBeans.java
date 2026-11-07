@@ -27,7 +27,7 @@ public class SecurityBeans {
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/v3/api-docs")
-                        .hasRole("MANAGER")
+                        .permitAll()
                         .requestMatchers(HttpMethod.GET,
                                 "/catalogue-api/products",
                                 "/catalogue-api/products/{productId:\\d+}").permitAll()
