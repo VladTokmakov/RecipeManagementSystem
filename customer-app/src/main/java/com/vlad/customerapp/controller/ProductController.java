@@ -29,6 +29,8 @@ public class ProductController {
 
     private final ProductReviewsService productReviewsService;
 
+    private final org.springframework.context.MessageSource messageSource;
+
     @ModelAttribute(name = "product", binding = false)
     public Product loadProduct(@PathVariable("productId") int id) {
         return this.productsClient.findProduct(id)
@@ -105,9 +107,14 @@ public class ProductController {
 
     @ExceptionHandler(NoSuchElementException.class)
     public String handleNoSuchElementException(NoSuchElementException exception, Model model,
-                                               jakarta.servlet.http.HttpServletResponse response) {
+                                               jakarta.servlet.http.HttpServletResponse response,
+                                               jakarta.servlet.http.HttpServletRequest request) {
         response.setStatus(404);
-        model.addAttribute("error", exception.getMessage());
+        String message = exception.getMessage();
+        String text = request.getLocale() == null || message == null
+                ? message
+                : this.messageSource.getMessage(message, null, message, request.getLocale());
+        model.addAttribute("error", text);
         return "errors/404";
     }
 }

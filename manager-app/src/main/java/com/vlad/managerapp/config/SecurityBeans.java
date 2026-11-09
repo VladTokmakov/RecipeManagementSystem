@@ -30,6 +30,7 @@ public class SecurityBeans {
             throws Exception {
         return http
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
+                        .requestMatchers("/styles.css", "/favicon.ico", "/static/**").permitAll()
                         .requestMatchers("/errors/**").permitAll()
                         .anyRequest().hasRole("MANAGER"))
                 .oauth2Login(Customizer.withDefaults())

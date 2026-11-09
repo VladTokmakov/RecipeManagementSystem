@@ -20,20 +20,6 @@
     <spring-boot-version>3.5.3</spring-boot-version>
   </properties>
 
-
-  <!--
-    <dependencyManagement>
-      <dependencies>
-        <dependency>
-          <groupId>org.springframework.boot</groupId>
-          <artifactId>spring-boot-dependencies</artifactId>
-          <version>${spring-boot-version}</version>
-          <scope>import</scope>
-          <type>pom</type>
-        </dependency>
-      </dependencies>
-    </dependencyManagement>
--->
     <build>
       <plugins>
         <plugin>

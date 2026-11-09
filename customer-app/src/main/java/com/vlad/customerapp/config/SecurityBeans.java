@@ -32,6 +32,7 @@ public class SecurityBeans {
             throws Exception {
         return http
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
+                        .requestMatchers("/styles.css", "/favicon.ico", "/static/**").permitAll()
                         .requestMatchers("/errors/**").permitAll()
                         .anyRequest().access(new WebExpressionAuthorizationManager(
                                 "hasAuthority('SCOPE_view_catalogue') and hasRole('CUSTOMER')")))
