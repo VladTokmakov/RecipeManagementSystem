@@ -140,7 +140,6 @@
 - https://localhost             — customer-app
 - https://localhost/manager     — manager-app
 - https://localhost/auth        — Keycloak
-- https://localhost/catalogue-api — REST API
 
 HTTP-запросы на порт 80 перенаправляются на HTTPS (301).
 Сертификат самоподписанный: при первом открытии браузер покажет
@@ -167,11 +166,4 @@ Swagger защищён тем же Keycloak, что и остальные при
     Фильтрация:
 - по названию рецепта
 - по описанию
-
-    Логирование:
-Используется SLF4J + Spring Logging.
-- HTTP запросы
-- операции CRUD
-- ошибки валидации
-- авторизация пользователей
    
